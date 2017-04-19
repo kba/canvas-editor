@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
+  </head>
+  <body>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Mode
+      </div>
+      <div class="list-group">
+          <a class="btn btn-default list-group-item">Hover</a>
+          <a class="btn btn-default list-group-item">Hover (additive)</a>
+          <a class="btn btn-default list-group-item">Move</a>
+          <a class="btn btn-default list-group-item">Create</a>
+          <a class="btn btn-default list-group-item">Select</a>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Shapes
+      </div>
+      <div class="list-group">
+        <a class="btn btn-default list-group-item" title="Polygon"><img src="icons/polygon.svg"/>Polygon</a>
+        <a class="btn btn-primary list-group-item" title="Rectangle"><img src="icons/rectangle.svg"/>Rectangle</a>
+      </div>
+    </div>
+
+  </body>
+</html>
