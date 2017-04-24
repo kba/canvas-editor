@@ -1,13 +1,13 @@
 <template lang="pug">
 #app.container
-  img(src="./assets/earth.jpg",style="position:fixed;top:0;left:0")
+  //- img(src="./assets/earth.jpg",style="position:fixed;top:0;left:0")
   .container
     .row
       .col-xs-12
         .form-inline.xrx-toolbar
           toolbar-modes(
             ref="modes",
-            @select-mode="dump($event)"
+            @select-mode="select-mode($event)"
           )
           toolbar-shapes
           toolbar-actions
@@ -15,7 +15,7 @@
       .col-xs-12
         .panel.panel-primary
           .panel-heading Canvas
-          xrx-canvas
+          xrx-canvas(ref="canvas")
 </template>
 
 <script>
@@ -36,7 +36,8 @@ export default {
     XrxCanvas,
   },
   methods: {
-    dump(...args) { console.log(args) }
+    dump(...args) { console.log(args) },
+    selectMode(mode) { this.$refs.canvas.setMode(mode); }
   }
 
 }

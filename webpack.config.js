@@ -38,6 +38,11 @@ module.exports = {
             //     exclude: /node_modules/
             // },
             {
+                test: /\.js$/,
+                loader: 'babel-loader',
+                exclude: /node_modules/
+            },
+            {
                 test: /\.s?css$/,
                 loader: 'style-loader!css-loader!sass-loader',
             },
