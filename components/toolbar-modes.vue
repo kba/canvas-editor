@@ -2,11 +2,11 @@
 .input-group
   span.input-group-addon.hidden-sm.hidden-xs Mode
   select.form-control(
-      @click="select($event.target.value)")
+      @click="$emit('select-mode', $event.target.value)")
     option(
       v-for="value in modesEnabled",
       v-bind:value="value",
-      v-bind:selected="value == mode"
+      v-bind:selected="value == $parent.mode"
     ) {{ modesAvailable.find(x => x.value == value).text }}
 </template>
 
@@ -14,24 +14,18 @@
 export default {
   name: 'toolbar-modes',
   props: {
-    initialMode: {type: String, default: 'hover_mult'},
-    modesEnabled: {type: Array, default(){return['hover', 'hover_mult', 'move', 'create', 'select']}},
+    initialMode: {type: String, default: 'HoverMult'},
+    modesEnabled: {type: Array, default(){return['Hover', 'HoverMult', 'Move', 'Create', 'Select']}},
   },
   data() { return {
     mode: this.initialMode,
     modesAvailable: [
-      {value: 'hover', text: 'Hover'},
-      {value: 'hover_mult', text: 'Hover (multiple)'},
-      {value: 'move', text: 'Move'},
-      {value: 'create', text: 'Create'},
-      {value: 'select', text: 'Select'},
+      {value: 'Hover', text: 'Hover'},
+      {value: 'HoverMult', text: 'Hover (multiple)'},
+      {value: 'Move', text: 'Move'},
+      {value: 'Create', text: 'Create'},
+      {value: 'Select', text: 'Select'},
     ]
   }},
-  methods: {
-    select(mode) {
-      this.mode = mode
-      this.$emit('select-mode', mode)
-    }
-  }
 }
 </script>
