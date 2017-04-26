@@ -15,14 +15,14 @@ export default {
   name: 'toolbar-modes',
   props: {
     initialMode: {type: String, default: 'HoverMult'},
-    modesEnabled: {type: Array, default(){return['Hover', 'HoverMult', 'Move', 'Create', 'Select']}},
+    modesEnabled: {type: Array, default(){return['Hover', 'HoverMult', 'Modify', 'Create', 'Select']}},
   },
   data() { return {
     mode: this.initialMode,
     modesAvailable: [
       {value: 'Hover', text: 'Hover'},
       {value: 'HoverMult', text: 'Hover (multiple)'},
-      {value: 'Move', text: 'Move'},
+      {value: 'Modify', text: 'Modify'},
       {value: 'Create', text: 'Create'},
       {value: 'Select', text: 'Select'},
     ]

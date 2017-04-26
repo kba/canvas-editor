@@ -1,6 +1,5 @@
 <template lang="pug">
 #app.container
-  //- img(src="./assets/earth.jpg",style="position:fixed;top:0;left:0")
   .container
     .row
       .col-xs-12
@@ -14,6 +13,9 @@
             @draw="draw($event)"
           )
           toolbar-actions
+          toolbar-zoom(
+            @zoom="setZoomFactor($event)"
+            )
     .row
       .col-xs-12
         .panel.panel-primary
@@ -31,21 +33,26 @@ import XrxUtils from 'semtonotes-utils'
 import ToolbarModes   from './components/toolbar-modes.vue'
 import ToolbarShapes  from './components/toolbar-shapes.vue'
 import ToolbarActions from './components/toolbar-actions.vue'
+import ToolbarZoom from './components/toolbar-zoom.vue'
 
 export default {
   name: 'app',
   data() { return {
     mode: 'hover-mult',
+    zoom: this.initialZoom,
     image: null,
   }},
   props: {
     width: {type: Number, default: 600},
     height: {type: Number, default: 400},
+    initialZoom: {type: Number, default: 1},
+    zoomStep: {type: Number, default: 0.1},
   },
   components: {
     ToolbarModes,
     ToolbarShapes,
     ToolbarActions,
+    ToolbarZoom,
   },
   mounted() {
     this.image = new xrx.drawing.Drawing(this.$refs.canvas)
@@ -68,6 +75,14 @@ export default {
         this.image[`setMode${mode}`]();
       }
       this.mode = mode
+    },
+    setZoomFactor(amount) {
+      if (amount === 'in') {
+        this.zoom += this.zoomStep
+      }
+      console.log(this.zoom)
+      this.image.getViewbox().setZoomFactor(this.zoom)
+      this.image.draw()
     },
     draw(shapeName) {
       const shape = new xrx.shape[shapeName](this.image)
@@ -117,5 +132,8 @@ export default {
 .xrx-toolbar .dropdown-toggle
 {
   height: 37px;
+}
+button > img {
+  height: 26px;
 }
 </style>
