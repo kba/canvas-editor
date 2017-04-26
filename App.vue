@@ -26,6 +26,7 @@
 
 <script>
 import xrx from 'semtonotes-client'
+import XrxUtils from 'semtonotes-utils'
 
 import ToolbarModes   from './components/toolbar-modes.vue'
 import ToolbarShapes  from './components/toolbar-shapes.vue'
@@ -70,10 +71,34 @@ export default {
     },
     draw(shapeName) {
       const shape = new xrx.shape[shapeName](this.image)
-      const style = new xrx.shape.Style()
-      style.setStrokeWidth(1)
-      style.setStrokeColor('#3B3BFF')
-      shape.setStyle(style)
+      // const style = new xrx.shape.Style()
+      // style.setStrokeWidth(1)
+      // style.setStrokeColor('#3B3BFF')
+      // shape.setStyle(style)
+      shape.getHoverable().setFillColor('#00ff00')
+      shape.getHoverable().setFillOpacity(1)
+      XrxUtils.applyStyle(shape, {
+        strokeWidth: 1,
+        strokeColor: '#3B3BFF',
+        fillColor: '#3B3BFF',
+        fillOpacity: 0.4,
+        hoverable: {
+            strokeWidth: 1,
+            strokeColor: '#00ff00',
+            fillColor: '#00ff00',
+            fillOpacity: 0.4,
+        },
+        creatable: {
+            strokeWidth: 1,
+            strokeColor: '#ff0000',
+            fillColor: '#ff0000',
+            fillOpacity: 0.4,
+        },
+        selectable: {
+            strokeColor: '#ff00ff',
+            fillColor: '#ff00ff',
+        },
+      })
       this.setMode('Create')
       this.image.setModeCreate(shape.getCreatable())
     }
