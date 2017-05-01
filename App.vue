@@ -39,7 +39,9 @@
           img(src="./assets/hand.svg")
         button.btn.btn-default(@click="setMode('Select')",title="Select")
           img(src="./assets/cursor.svg")
-        button.btn.btn-default(title="Delete",@click="removeSelected",v-bind:disabled="!selectedShape")
+        button.btn.btn-default(title="Copy",@click="copyShape",v-bind:disabled="!selectedShape")
+          img(src="./assets/copy.svg")
+        button.btn.btn-default(title="Remove",@click="removeSelected",v-bind:disabled="!selectedShape")
           img(src="./assets/remove.svg")
       .input-group.btn-group
         span.input-group-addon.hidden-sm.hidden-xs Zoom
@@ -221,7 +223,13 @@ export default {
     },
     showImageModal() {
       $(this.$refs.imageModal).modal('show')
+    },
+    copyShape() {
+      const svg = XrxUtils.svgFromShapes(this.image.getSelectedShape())
+      XrxUtils.drawFromSvg(svg, this.image)
+      this.applyStyles()
     }
+
   }
 }
 </script>
