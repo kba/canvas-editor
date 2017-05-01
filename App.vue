@@ -2,15 +2,6 @@
 .panel.panel-default
   .panel-heading
     .form-inline.xrx-toolbar
-      .input-group
-        span.input-group-addon.hidden-sm.hidden-xs Mode
-        select.form-control(@click="setMode($event.target.value)")
-          option(
-            v-for="value in modesEnabled",
-            v-bind:value="value",
-            v-bind:disabled="modesAvailable.find(x => x.value == value).disabled"
-            v-bind:selected="value == mode"
-          ) {{ modesAvailable.find(x => x.value == value).text }}
       .input-group.btn-group
         span.input-group-addon.hidden-sm.hidden-xs Shape
         button.btn.btn-default(title="Polygon",@click="drawShape('Polygon')")
@@ -23,6 +14,23 @@
           img(src="./assets/circle.svg")
         button.btn.btn-default(title="Polyline",@click="drawShape('Polyline')")
           img(src="./assets/polyline.svg")
+        button.btn.btn-default(title="line",@click="drawShape('Line')")
+          img(src="./assets/line.svg")
+      .input-group
+        span.input-group-addon.hidden-sm.hidden-xs Mode
+        select.form-control(@click="setMode($event.target.value)")
+          option(
+            v-for="value in modesEnabled",
+            v-bind:value="value",
+            v-bind:disabled="modesAvailable.find(x => x.value == value).disabled"
+            v-bind:selected="value == mode"
+          ) {{ modesAvailable.find(x => x.value == value).text }}
+      .input-group
+        span.input-group-addon.hidden-sm.hidden-xs SVG
+        button.btn.btn-default(title="Save SVG",@click="showImexport('export')")
+          img(src="./assets/save.svg")
+        button.btn.btn-default(title="Save SVG",@click="showImexport('import')")
+          img(src="./assets/upload.svg")
       .input-group.btn-group
         span.input-group-addon.hidden-xs.hidden-sm Action
         button.btn.btn-default(@click="setMode('Modify')",title="Select")
@@ -52,6 +60,15 @@
     ref="canvas",
     v-bind:style="`width: ${width}; height: ${height}`"
   )
+  // Modal
+  .svg-panel.modal.fade(role='dialog', ref="svgPanel")
+    .modal-dialog
+      // Modal content
+      .modal-content
+        .modal-header
+        .modal-body
+          textarea(v-model="svgImExPort", placeholder="SVG here")
+          button.btn.btn-success(@click="loadSvg",v-show="imexport == 'import'") Load
 </template>
 
 <script>
@@ -62,7 +79,9 @@ export default {
   name: 'app',
   data() { return {
     mode: this.initialMode,
+    svgImExPort: '',
     zoomValue: this.initialZoom,
+    imexport: 'import',
     image: null,
   }},
   props: {
@@ -118,6 +137,9 @@ export default {
       this.setMode('HoverMult')
       this.applyStyles()
     }
+    this.image.eventShapeSelected = (shape) =>{
+      console.log("selected", shape)
+    }
     // this.image.eventViewboxChange = () => this.applyStyles()
     this.loadImage(this.initialImage)
   },
@@ -160,20 +182,36 @@ export default {
       // this.image.getLayerShape().addShapes(shape)
     },
     removeShape() {
-      if (this.image.getSelectedShape() === undefined) {
+      if (this.image.getSelectedShape()) {
         window.alert("Please select a shape")
       } else {
         if (window.confirm("Delete selected shape?")) {
           this.image.removeShape(this.image.getSelectedShape())
         }
       }
+    },
+    showImexport(imexport) {
+      this.imexport = imexport
+      this.svgImExPort = (this.imexport === 'import')  
+        ? '' 
+        : XrxUtils.svgFromDrawing(this.image)
+      $(this.$refs.svgPanel).modal('show')
+    },
+    loadSvg() {
+      this.image.getLayerShape().removeShapes();
+      XrxUtils.drawFromSvg(this.svgImExPort, this.image)
+      this.applyStyles()
+      $(this.$refs.svgPanel).modal('hide')
     }
   }
-
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
+.btn {
+  padding-left: 6px;
+  padding-right: 6px;
+}
 .panel {
   background: transparent
 }
@@ -186,5 +224,12 @@ export default {
 }
 button > img {
   height: 26px;
+}
+.svg-panel {
+  textarea {
+    font-family: monospace;
+    width: 90%;
+    min-height: 200px;
+  }
 }
 </style>
