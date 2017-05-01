@@ -77,7 +77,13 @@
         .modal-header(v-else) Export as SVG
         .modal-body
           textarea.form-control(v-model="svgImExPort", placeholder="SVG here")
-          button.form-control.btn.btn-success(@click="loadSvg",v-show="imexport == 'import'") Load
+          template(v-if="imexport == 'import'")
+            .form-group.row
+              .col-xs-3
+                label(for="svgLoadRelative") Load Relative
+              .col-xs-9
+                input.form-control(id="svgLoadRelative",type="checkbox",v-model="loadRelative")
+            button.form-control.btn.btn-success(@click="loadSvg") Load
 
   // Background image modal
   .image-modal.modal.fade(role='dialog', ref="imageModal", tabindex=-1)
@@ -100,6 +106,7 @@ export default {
     svgImExPort: '',
     zoomValue: this.initialZoom,
     imexport: 'import',
+    loadRelative: false,
     image: null,
     selectedShape: null,
   }},
@@ -217,7 +224,7 @@ export default {
     },
     loadSvg() {
       this.image.getLayerShape().removeShapes();
-      XrxUtils.drawFromSvg(this.svgImExPort, this.image)
+      XrxUtils.drawFromSvg(this.svgImExPort, this.image, {relative: this.loadRelative})
       this.applyStyles()
       $(this.$refs.imexportModal).modal('hide')
     },
