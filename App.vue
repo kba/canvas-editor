@@ -39,7 +39,9 @@
           img(src="./assets/hand.svg")
         button.btn.btn-default(@click="setMode('Select')",title="Select")
           img(src="./assets/cursor.svg")
-        button.btn.btn-default(title="Delete",@click="removeSelected")
+        button.btn.btn-default(title="Copy",@click="copyShape",v-bind:disabled="!selectedShape")
+          img(src="./assets/copy.svg")
+        button.btn.btn-default(title="Remove",@click="removeSelected",v-bind:disabled="!selectedShape")
           img(src="./assets/remove.svg")
       .input-group.btn-group
         span.input-group-addon.hidden-sm.hidden-xs Zoom
@@ -99,6 +101,7 @@ export default {
     zoomValue: this.initialZoom,
     imexport: 'import',
     image: null,
+    selectedShape: null,
   }},
   props: {
     width: {type: Number, default: 600},
@@ -154,7 +157,7 @@ export default {
       this.applyStyles()
     }
     this.image.eventShapeSelected = (shape) =>{
-      console.log("selected", shape)
+      this.selectedShape = shape
     }
     this.backgroundImage = this.initialImage
     // this.image.eventViewboxChange = () => this.applyStyles()
@@ -183,11 +186,9 @@ export default {
       else if (amount === 'height') this.image.getViewbox().fitToHeight(true)
       else this.image.getViewbox().zoomTo(amount)
       this.zoomValue = this.image.getViewbox().getZoomValue()
-      console.log(this.zoomValue)
       this.image.draw()
     },
     applyStyles() {
-      console.log('yello')
       this.image.getLayerShape().getShapes().forEach(shape => {
         XrxUtils.applyStyle(shape, this.style)
       })
@@ -222,7 +223,13 @@ export default {
     },
     showImageModal() {
       $(this.$refs.imageModal).modal('show')
+    },
+    copyShape() {
+      const svg = XrxUtils.svgFromShapes(this.image.getSelectedShape())
+      XrxUtils.drawFromSvg(svg, this.image)
+      this.applyStyles()
     }
+
   }
 }
 </script>
