@@ -236,6 +236,9 @@ export default {
  *
  * #### `mode-changed(from, to)`
  * The mode changed, it was `from`, now it is `to`.
+ *
+ * #### `svg-changed(svg)`
+ * The SVG changed to `svg`
  */
   mounted() {
     this.image = XrxUtils.createDrawing(this.$refs.canvas, this.width, this.height)
@@ -247,14 +250,20 @@ export default {
     this.$on('shape-selected', (shape) => {
       this.selectedShape = shape
     })
+    this.$on('shape-modified', (shape) => {
+      this.svgImExPort = XrxUtils.svgFromDrawing(this.image)
+    })
     this.$on('shape-created', (shape) => {
       this.setMode('HoverMult')
       this.applyStyles()
+      this.svgImExPort = XrxUtils.svgFromDrawing(this.image)
       document.activeElement.blur()
     })
     this.$on('mode-changed', (from, to) => {
       this.selectedShape = null
     })
+    this.$watch(() => this.svgImExPort, (svg) => this.$emit('svg-changed', svg))
+    this.$on('svg-changed', x=>console.log(x))
 
     this.backgroundImage = this.initialImage
     this.loadImage()
