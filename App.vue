@@ -101,7 +101,7 @@
 import XrxUtils from 'semtonotes-utils'
 
 export default {
-  name: 'app',
+  name: 'xrx-vue',
   data() { return {
     mode: this.initialMode,
     svgImExPort: '',
