@@ -239,6 +239,7 @@ export default {
  *
  * #### `svg-changed(svg)`
  * The SVG changed to `svg`
+ *
  */
   mounted() {
     this.image = XrxUtils.createDrawing(this.$refs.canvas, this.width, this.height)
