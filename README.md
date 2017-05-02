@@ -24,6 +24,7 @@
 		* [`shape-created(shape)`](#shape-createdshape)
 		* [`shape-selected(shape)`](#shape-selectedshape)
 		* [`mode-changed(from, to)`](#mode-changedfrom-to)
+		* [`svg-changed(svg)`](#svg-changedsvg)
 	* [Methods](#methods)
 		* [`loadImage(img)`](#loadimageimg)
 		* [`setMode(mode, ...args)`](#setmodemode-args)
@@ -32,7 +33,8 @@
 		* [`drawShape(shapeName)`](#drawshapeshapename)
 		* [`removeSelected`](#removeselected)
 		* [`copySelected()`](#copyselected)
-		* [`showImexport(impexport)`](#showimexportimpexport)
+		* [`showImport()`](#showimport)
+		* [`showExport()`](#showexport)
 		* [`loadSvg()`](#loadsvg)
 		* [`showImageModal()`](#showimagemodal)
 
@@ -82,6 +84,8 @@ A new shape `shape` was created.
 A shape `shape` has been selected by the user.
 #### `mode-changed(from, to)`
 The mode changed, it was `from`, now it is `to`.
+#### `svg-changed(svg)`
+The SVG changed to `svg`
 ### Methods
 #### `loadImage(img)`
 - `@param String img` URL of the image. Defaults to `this.backgroundImage`
@@ -111,11 +115,10 @@ Apply the defined style to all the shapes
 Remove the currently selected shape
 #### `copySelected()`
 Copy the currently selected shape
-#### `showImexport(impexport)`
-Show the import/export modal
-`imexport` can be one of
-- `import` 
-- `export`
+#### `showImport()`
+Show the import modal
+#### `showExport()`
+Show the export modal
 #### `loadSvg()`
 Load the SVG
 #### `showImageModal()`
