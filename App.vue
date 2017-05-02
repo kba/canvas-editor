@@ -219,6 +219,7 @@ export default {
       } else {
         if (window.confirm("Delete selected shape?")) {
           this.image.removeShape(this.image.getSelectedShape())
+          this.setMode(this.initialMode)
         }
       }
     },
