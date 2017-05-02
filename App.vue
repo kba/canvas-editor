@@ -137,7 +137,7 @@ export default {
       {value: 'Create', text: 'Create', disabled: true},
       {value: 'Select', text: 'Select'},
     ]}},
-    style: {type: Object, default() { return {
+    xrxStyle: {type: Object, default() { return {
       strokeColor: '#3B3BFF',
       fillColor: '#3B3BFF',
       strokeWidth: 2,
@@ -208,12 +208,12 @@ export default {
     },
     applyStyles() {
       this.image.getLayerShape().getShapes().forEach(shape => {
-        XrxUtils.applyStyle(shape, this.style)
+        XrxUtils.applyStyle(shape, this.xrxStyle)
       })
     },
     drawShape(shapeName) {
       const shape = new xrx.shape[shapeName](this.image)
-      XrxUtils.applyStyle(shape, this.style)
+      XrxUtils.applyStyle(shape, this.xrxStyle)
       this.setMode('Create', shape.getCreatable())
       // this.image.getLayerShape().addShapes(shape)
     },
