@@ -19,7 +19,7 @@
           ) {{ modesAvailable.find(x => x.value == value).text }}
       .input-group.btn-group(v-if="mode === 'Select'")
         span.input-group-addon.hidden-xs.hidden-sm Action
-        button.btn.btn-default(title="Copy",@click="copyShape",v-bind:disabled="!selectedShape")
+        button.btn.btn-default(title="Copy",@click="copySelected",v-bind:disabled="!selectedShape")
           img(src="./assets/copy.svg")
         button.btn.btn-default(title="Remove",@click="removeSelected",v-bind:disabled="!selectedShape")
           img(src="./assets/remove.svg")
@@ -100,6 +100,7 @@
 <script>
 import XrxUtils from 'semtonotes-utils'
 
+
 export default {
   name: 'xrx-vue',
   data() { return {
@@ -112,16 +113,66 @@ export default {
     selectedShape: null,
     backgroundImage: null,
   }},
+  /*
+   * ### Properties
+   *
+   */
   props: {
+
+    /**
+     * #### `width`
+     * Width of the canvas (**not** the image). Default: `600`
+     */
     width: {type: Number, default: 600},
+
+    /**
+     * #### `height`
+     * Height of the canvas (**not** the image). Default: `400`
+     */
     height: {type: Number, default: 400},
+
+    /**
+     * #### `showToolbar`
+     * Whether to show or hide the complete toolbar. Default: `true`
+     */
     showToolbar: {type: Boolean, default: true},
+
+    /**
+     * #### `showToolbarModes`
+     * Whether to show the modes toolbar. Default: `true`
+     */
     showToolbarModes: {type: Boolean, default: true},
+
+    /**
+     * #### `showToolbarModeList`
+     * Whether to show the list of modes. Default: `true`
+     */
     showToolbarModeList: {type: Boolean, default: false},
+
+    /**
+     * #### `zoomFactorMax`
+     * Maximum zoom factor. Default: `4`
+     */
     zoomFactorMax: {type: Number, default: 4},
+
+    /**
+     * #### `initialZoom`
+     * Initial zoom. Default: `1` (== 100%)
+     */
     initialZoom: {type: Number, default: 1},
+
+    /**
+     * #### `initialImage`
+     * Initial background image to load.
+     */
     initialImage: {type: String, default: './assets/earth.jpg'},
+
+    /**
+     * #### `initialMode`
+     * Initial mode. Default `HoverMult`
+     */
     initialMode: {type: String, default: 'HoverMult'},
+
     modesEnabled: {type: Array, default(){return[
       'Hover',
       'HoverMult',
@@ -136,6 +187,11 @@ export default {
       {value: 'Create', text: 'Create', disabled: true},
       {value: 'Select', text: 'Select'},
     ]}},
+
+    /**
+     * #### `xrxStyle`
+     * Styles to use. Default: `[see source]`
+     */
     xrxStyle: {type: Object, default() { return {
       strokeColor: '#3B3BFF',
       fillColor: '#3B3BFF',
@@ -160,29 +216,63 @@ export default {
         fillOpacity: 0.4,
       },
     }}},
+
   },
+
+/**
+ * ### Events
+ * 
+ * #### `viewbox-changed`
+ * The viewbox (visible layer) has changed.
+ *
+ * #### `shape-modified(shape)`
+ * An existing shape `shape` was changed.
+ *
+ * #### `shape-created(shape)`
+ * A new shape `shape` was created.
+ *
+ * #### `shape-selected(shape)`
+ * A shape `shape` has been selected by the user.
+ *
+ * #### `mode-changed(from, to)`
+ * The mode changed, it was `from`, now it is `to`.
+ */
   mounted() {
     this.image = XrxUtils.createDrawing(this.$refs.canvas, this.width, this.height)
-    this.$on('mode-change', (from, to) => {
-      this.selectedShape = null
+    this.image.eventViewboxChange = () => this.$emit('viewbox-changed')
+    this.image.eventShapeModify = (shape) => this.$emit('shape-modified', shape)
+    this.image.eventShapeCreated = (shape) => this.$emit('shape-created', shape)
+    this.image.eventShapeSelected = (shape) => this.$emit('shape-selected', shape)
+
+    this.$on('shape-selected', (shape) => {
+      this.selectedShape = shape
     })
-    // this.image.eventShapeModify = () => this.applyStyles()
-    // this.image.eventViewboxChange = () => this.applyStyles()
-    this.image.eventShapeCreated = () => {
+    this.$on('shape-created', (shape) => {
       this.setMode('HoverMult')
       this.applyStyles()
       document.activeElement.blur()
-    }
-    this.image.eventShapeSelected = (shape) =>{
-      this.selectedShape = shape
-    }
+    })
+    this.$on('mode-changed', (from, to) => {
+      this.selectedShape = null
+    })
+
     this.backgroundImage = this.initialImage
-    this.setMode(this.mode)
     this.loadImage()
+    this.setMode(this.mode)
   },
+
+  /**
+   * ### Methods
+   */
   methods: {
-    dump(...args) { console.log(args) },
-    loadImage() {
+
+    /**
+     * #### `loadImage(img)`
+     * - `@param String img` URL of the image. Defaults to `this.backgroundImage`
+     *   which defaults to [`initialImage`](#initialimage)
+     */
+    loadImage(img) {
+      if (img) this.backgroundImage = img
       this.image.setBackgroundImage(this.backgroundImage, () => {
         this.image.getViewbox().fit(false)
         this.image.getViewbox().setZoomFactorMax(this.zoomFactorMax)
@@ -190,12 +280,32 @@ export default {
         this.image.draw()
       })
     },
+
+    /**
+     * #### `setMode(mode, ...args)`
+     *
+     * Sets the mode, passing further args to `setXXXMode`
+     */
     setMode(mode, ...args) {
       if (mode === 'HoverMult') this.image.setModeHover(true);
       else this.image[`setMode${mode}`](...args);
-      this.$emit('mode-change', this.mode, mode)
+      this.$emit('mode-changed', this.mode, mode)
       this.mode = mode
     },
+
+    /**
+     * #### `zoom(amount)`
+     *
+     * Change the zoom level of the viewbox.
+     *
+     * `amount` can be
+     * - `in` to zoom in
+     * - `out` to zoom out
+     * - `fit` to make the image fit the canvas
+     * - `width` to make the image width fit the canvas
+     * - `height` to make the image height fit the canvas
+     * - a number between `0` and [`zoomFactorMax`](#zoomfactormax) to zoom to that value
+     */
     zoom(amount) {
       if (amount === 'in') this.image.getViewbox().zoomIn()
       else if (amount === 'out') this.image.getViewbox().zoomOut()
@@ -206,17 +316,41 @@ export default {
       this.zoomValue = this.image.getViewbox().getZoomValue()
       this.image.draw()
     },
+
+    /**
+     * #### `applyStyles()`
+     *
+     * Apply the defined style to all the shapes
+     */
     applyStyles() {
       this.image.getLayerShape().getShapes().forEach(shape => {
         XrxUtils.applyStyle(shape, this.xrxStyle)
       })
     },
+
+    /**
+     * #### `drawShape(shapeName)`
+     *
+     * `shapeName` can be one of:
+     * - `Polygon`
+     * - `Polyline`
+     * - `Line`
+     * - `Rect`
+     * - `Circle`
+     * - `Ellipse`
+     */
     drawShape(shapeName) {
       const shape = new xrx.shape[shapeName](this.image)
       XrxUtils.applyStyle(shape, this.xrxStyle)
       this.setMode('Create', shape.getCreatable())
       // this.image.getLayerShape().addShapes(shape)
     },
+
+    /**
+     * #### `removeSelected`
+     *
+     * Remove the currently selected shape
+     */
     removeSelected() {
       if (!this.image.getSelectedShape()) {
         window.alert("Please select a shape")
@@ -227,11 +361,27 @@ export default {
         }
       }
     },
-    copyShape() {
+
+    /**
+     * #### `copySelected()`
+     *
+     * Copy the currently selected shape
+     */
+    copySelected() {
       const svg = XrxUtils.svgFromShapes(this.image.getSelectedShape())
       XrxUtils.drawFromSvg(svg, this.image)
       this.applyStyles()
     },
+
+    /**
+     * #### `showImexport(impexport)`
+     *
+     * Show the import/export modal
+     *
+     * `imexport` can be one of
+     * - `import` 
+     * - `export`
+     */
     showImexport(imexport) {
       this.imexport = imexport
       this.svgImExPort = (this.imexport === 'import')  
@@ -239,12 +389,24 @@ export default {
         : XrxUtils.svgFromDrawing(this.image)
       $(this.$refs.imexportModal).modal('show')
     },
+
+    /**
+     * #### `loadSvg()`
+     *
+     * Load the SVG
+     */
     loadSvg() {
       this.image.getLayerShape().removeShapes();
       XrxUtils.drawFromSvg(this.svgImExPort, this.image, {relative: this.loadRelative})
       this.applyStyles()
       $(this.$refs.imexportModal).modal('hide')
     },
+
+    /**
+     * #### `showImageModal()`
+     *
+     * Show the modal that allows changing the image url
+     */
     showImageModal() {
       $(this.$refs.imageModal).modal('show')
     },
