@@ -11,8 +11,8 @@ module.exports = {
     externals: {
         jquery: "$",
         bootstrap: 'bootstrap',
-        // vue: 'vue',
-        // vuex: 'vuex',
+        vue: 'Vue',
+        'semtonotes-client': 'xrx',
     },
     resolve: {
         alias: {
@@ -21,6 +21,11 @@ module.exports = {
     },
     module: {
         loaders: [
+            {
+                test: /\.js$/,
+                loader: 'babel-loader',
+                exclude: /node_modules/
+            },
             {
                 test: /\.vue/,
                 loader: "vue-loader",
@@ -32,24 +37,10 @@ module.exports = {
                     }
                 },
             },
-            // {
-            //     test: /\.js$/,
-            //     loader: 'babel-loader',
-            //     exclude: /node_modules/
-            // },
-            {
-                test: /\.js$/,
-                loader: 'babel-loader',
-                exclude: /node_modules/
-            },
             {
                 test: /\.s?css$/,
                 loader: 'style-loader!css-loader!sass-loader',
             },
-            // {
-            //     test: /\.html$/,
-            //     loader: 'html-loader',
-            // },
             {test: /(png|jpg|svg)$/i, loader: "url-loader"},
         ],
     },
