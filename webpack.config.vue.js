@@ -5,6 +5,7 @@ module.exports = {
     output: {
         path: __dirname + "/dist",
         filename: "xrx-vue.js",
+        library: 'XrxVue',
         libraryTarget: 'umd',
     },
     externals: {
