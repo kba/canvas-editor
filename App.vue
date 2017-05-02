@@ -35,9 +35,11 @@
           img(src="./assets/image.svg")
       .input-group.btn-group
         span.input-group-addon.hidden-xs.hidden-sm Action
-        button.btn.btn-default(@click="setMode('Modify')",title="Modify")
+        button(title="Hover",@click="setMode('HoverMult')",v-bind:class="`btn btn-default ${!!mode.match(/^Hover/)?'active':''}`")
           img(src="./assets/hand.svg")
-        button.btn.btn-default(@click="setMode('Select')",title="Select")
+        button(@click="setMode('Modify')",title="Modify",v-bind:class="`btn btn-default ${mode === 'Modify'?'active':''}`")
+          img(src="./assets/hand-point.svg")
+        button(@click="setMode('Select')",title="Select",v-bind:class="`btn btn-default ${mode === 'Select'?'active':''}`")
           img(src="./assets/cursor.svg")
         button.btn.btn-default(title="Copy",@click="copyShape",v-bind:disabled="!selectedShape")
           img(src="./assets/copy.svg")
