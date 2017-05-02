@@ -2,7 +2,7 @@
 .panel.panel-default
   .panel-heading(v-if="showToolbar")
     .form-inline.xrx-toolbar
-      .input-group
+      .input-group(v-if="showToolbarModes")
         span.input-group-addon.hidden-sm.hidden-xs Mode
         select.form-control(@click="setMode($event.target.value)")
           option(
@@ -115,6 +115,7 @@ export default {
     width: {type: Number, default: 600},
     height: {type: Number, default: 400},
     showToolbar: {type: Boolean, default: true},
+    showToolbarModes: {type: Boolean, default: false},
     zoomFactorMax: {type: Number, default: 4},
     initialZoom: {type: Number, default: 1},
     initialImage: {type: String, default: './assets/earth.jpg'},
