@@ -1,11 +1,11 @@
 {
   "name": "@kba/xrx-vue",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Draw shapes on canvases with semtonotes in Vue",
   "author": "kba",
   "main": "./dist/xrx-vue.js",
   "scripts": {
-      "prepublish": "webpack -p --config webpack.config.vue.js"
+    "prepublish": "webpack -p --config webpack.config.vue.js"
   },
   "peerDependencies": {
     "semtonotes-client": "^0.1.2",
