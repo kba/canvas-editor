@@ -4,13 +4,25 @@
     .form-inline.xrx-toolbar
       .input-group
         span.input-group-addon.hidden-sm.hidden-xs Mode
-        select.form-control(@click="setMode($event.target.value)")
+        button(title="Hover",@click="setMode('HoverMult')",v-bind:class="`btn btn-default ${!!mode.match(/^Hover/)?'active':''}`")
+          img(src="./assets/hand.svg")
+        button(@click="setMode('Modify')",title="Modify",v-bind:class="`btn btn-default ${mode === 'Modify'?'active':''}`")
+          img(src="./assets/hand-point.svg")
+        button(@click="setMode('Select')",title="Select",v-bind:class="`btn btn-default ${mode === 'Select'?'active':''}`")
+          img(src="./assets/cursor.svg")
+        select.form-control(@click="setMode($event.target.value)",v-if="showToolbarModeList")
           option(
             v-for="value in modesEnabled",
             v-bind:value="value",
             v-bind:disabled="modesAvailable.find(x => x.value == value).disabled"
             v-bind:selected="value == mode"
           ) {{ modesAvailable.find(x => x.value == value).text }}
+      .input-group.btn-group(v-if="mode === 'Select'")
+        span.input-group-addon.hidden-xs.hidden-sm Action
+        button.btn.btn-default(title="Copy",@click="copyShape",v-bind:disabled="!selectedShape")
+          img(src="./assets/copy.svg")
+        button.btn.btn-default(title="Remove",@click="removeSelected",v-bind:disabled="!selectedShape")
+          img(src="./assets/remove.svg")
       .input-group.btn-group
         span.input-group-addon.hidden-sm.hidden-xs Shape
         button.btn.btn-default(title="Polygon",@click="drawShape('Polygon')")
@@ -33,16 +45,6 @@
           img(src="./assets/upload.svg")
         button.btn.btn-default(title="Background Image",@click="showImageModal")
           img(src="./assets/image.svg")
-      .input-group.btn-group
-        span.input-group-addon.hidden-xs.hidden-sm Action
-        button.btn.btn-default(@click="setMode('Modify')",title="Modify")
-          img(src="./assets/hand.svg")
-        button.btn.btn-default(@click="setMode('Select')",title="Select")
-          img(src="./assets/cursor.svg")
-        button.btn.btn-default(title="Copy",@click="copyShape",v-bind:disabled="!selectedShape")
-          img(src="./assets/copy.svg")
-        button.btn.btn-default(title="Remove",@click="removeSelected",v-bind:disabled="!selectedShape")
-          img(src="./assets/remove.svg")
       .input-group.btn-group
         span.input-group-addon.hidden-sm.hidden-xs Zoom
         button.btn.btn-default(title="Zoom in",@click="zoom('in')")
@@ -115,6 +117,8 @@ export default {
     width: {type: Number, default: 600},
     height: {type: Number, default: 400},
     showToolbar: {type: Boolean, default: true},
+    showToolbarModes: {type: Boolean, default: true},
+    showToolbarModeList: {type: Boolean, default: false},
     zoomFactorMax: {type: Number, default: 4},
     initialZoom: {type: Number, default: 1},
     initialImage: {type: String, default: './assets/earth.jpg'},
@@ -133,7 +137,7 @@ export default {
       {value: 'Create', text: 'Create', disabled: true},
       {value: 'Select', text: 'Select'},
     ]}},
-    style: {type: Object, default() { return {
+    xrxStyle: {type: Object, default() { return {
       strokeColor: '#3B3BFF',
       fillColor: '#3B3BFF',
       strokeWidth: 2,
@@ -168,6 +172,7 @@ export default {
     this.image.eventShapeCreated = () => {
       this.setMode('HoverMult')
       this.applyStyles()
+      document.activeElement.blur()
     }
     this.image.eventShapeSelected = (shape) =>{
       this.selectedShape = shape
@@ -204,12 +209,12 @@ export default {
     },
     applyStyles() {
       this.image.getLayerShape().getShapes().forEach(shape => {
-        XrxUtils.applyStyle(shape, this.style)
+        XrxUtils.applyStyle(shape, this.xrxStyle)
       })
     },
     drawShape(shapeName) {
       const shape = new xrx.shape[shapeName](this.image)
-      XrxUtils.applyStyle(shape, this.style)
+      XrxUtils.applyStyle(shape, this.xrxStyle)
       this.setMode('Create', shape.getCreatable())
       // this.image.getLayerShape().addShapes(shape)
     },
