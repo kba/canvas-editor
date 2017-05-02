@@ -172,7 +172,7 @@ export default {
      * #### `initialImage`
      * Initial background image to load.
      */
-    initialImage: {type: String, default: './assets/earth.jpg'},
+    initialImage: {type: String, default: './assets/earth.jpg', required: true},
 
     /**
      * #### `initialMode`
