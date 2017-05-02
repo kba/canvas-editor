@@ -232,63 +232,70 @@ export default {
 
   },
 
-  /**
-   * ### Events
-   * 
-   * #### `viewbox-changed`
-   * The viewbox (visible layer) has changed.
-   *
-   * #### `shape-modified(shape)`
-   * An existing shape `shape` was changed.
-   *
-   * #### `shape-created(shape)`
-   * A new shape `shape` was created.
-   *
-   * #### `shape-selected(shape)`
-   * A shape `shape` has been selected by the user.
-   *
-   * #### `mode-changed(from, to)`
-   * The mode changed, it was `from`, now it is `to`.
-   *
-   * #### `svg-changed(svg)`
-   * The SVG changed to `svg`
-   *
-   */
   mounted() {
     this.image = XrxUtils.createDrawing(this.$refs.canvas, this.width, this.height)
-    if (this.initialSvg)
-      XrxUtils.drawFromSvg(this.initialSvg, this.image)
-    this.image.eventViewboxChange = () => this.$emit('viewbox-changed')
-    this.image.eventShapeModify = (shape) => this.$emit('shape-modified', shape)
-    this.image.eventShapeCreated = (shape) => this.$emit('shape-created', shape)
-    this.image.eventShapeSelected = (shape) => this.$emit('shape-selected', shape)
 
-    this.$on('shape-selected', (shape) => {
-      this.selectedShape = shape
-    })
-    this.$on('shape-modified', (shape) => {
-      this.svgExport = XrxUtils.svgFromDrawing(this.image)
-    })
-    this.$on('shape-created', (shape) => {
-      this.setMode('HoverMult')
-      this.applyStyles()
-      this.svgExport = XrxUtils.svgFromDrawing(this.image)
-      document.activeElement.blur()
-    })
-    this.$on('mode-changed', (from, to) => {
-      this.selectedShape = null
-    })
-    this.$watch(() => this.svgExport, (svg) => this.$emit('svg-changed', svg))
+    this._setupEvents()
 
     this.backgroundImage = this.initialImage
     this.loadImage()
     this.setMode(this.mode)
+    if (this.initialSvg) {
+      XrxUtils.drawFromSvg(this.initialSvg, this.image)
+      this.applyStyles()
+    }
   },
 
   /**
    * ### Methods
    */
   methods: {
+
+    /**
+     * ### Events
+     * 
+     * #### `viewbox-changed`
+     * The viewbox (visible layer) has changed.
+     *
+     * #### `shape-modified(shape)`
+     * An existing shape `shape` was changed.
+     *
+     * #### `shape-created(shape)`
+     * A new shape `shape` was created.
+     *
+     * #### `shape-selected(shape)`
+     * A shape `shape` has been selected by the user.
+     *
+     * #### `mode-changed(from, to)`
+     * The mode changed, it was `from`, now it is `to`.
+     *
+     * #### `svg-changed(svg)`
+     * The SVG changed to `svg`
+     *
+     */
+    _setupEvents() {
+      this.image.eventViewboxChange = () => this.$emit('viewbox-changed')
+      this.image.eventShapeModify = (shape) => this.$emit('shape-modified', shape)
+      this.image.eventShapeCreated = (shape) => this.$emit('shape-created', shape)
+      this.image.eventShapeSelected = (shape) => this.$emit('shape-selected', shape)
+      this.$watch(() => this.svgExport, (svg) => this.$emit('svg-changed', svg))
+
+      this.$on('shape-selected', (shape) => {
+        this.selectedShape = shape
+      })
+      this.$on('shape-modified', (shape) => {
+        this.svgExport = XrxUtils.svgFromDrawing(this.image)
+      })
+      this.$on('shape-created', (shape) => {
+        this.setMode('HoverMult')
+        this.applyStyles()
+        this.svgExport = XrxUtils.svgFromDrawing(this.image)
+        document.activeElement.blur()
+      })
+      this.$on('mode-changed', (from, to) => {
+        this.selectedShape = null
+      })
+    },
 
     /**
      * #### `loadImage(img)`
