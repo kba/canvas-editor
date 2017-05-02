@@ -163,6 +163,12 @@ export default {
     zoomFactorMax: {type: Number, default: 4},
 
     /**
+     * #### `initialSvg`
+     * Initial SVG value
+     */
+    initialSvg: {type: String},
+
+    /**
      * #### `initialZoom`
      * Initial zoom. Default: `1` (== 100%)
      */
@@ -250,6 +256,8 @@ export default {
    */
   mounted() {
     this.image = XrxUtils.createDrawing(this.$refs.canvas, this.width, this.height)
+    if (this.initialSvg)
+      XrxUtils.drawFromSvg(this.initialSvg, this.image)
     this.image.eventViewboxChange = () => this.$emit('viewbox-changed')
     this.image.eventShapeModify = (shape) => this.$emit('shape-modified', shape)
     this.image.eventShapeCreated = (shape) => this.$emit('shape-created', shape)
