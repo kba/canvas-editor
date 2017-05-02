@@ -1,6 +1,6 @@
 <template lang="pug">
 .panel.panel-default
-  .panel-heading
+  .panel-heading(v-if="showToolbar")
     .form-inline.xrx-toolbar
       .input-group
         span.input-group-addon.hidden-sm.hidden-xs Mode
@@ -114,6 +114,7 @@ export default {
   props: {
     width: {type: Number, default: 600},
     height: {type: Number, default: 400},
+    showToolbar: {type: Boolean, default: true},
     zoomFactorMax: {type: Number, default: 4},
     initialZoom: {type: Number, default: 1},
     initialImage: {type: String, default: './assets/earth.jpg'},
@@ -172,6 +173,7 @@ export default {
       this.selectedShape = shape
     }
     this.backgroundImage = this.initialImage
+    this.setMode(this.mode)
     this.loadImage()
   },
   methods: {
