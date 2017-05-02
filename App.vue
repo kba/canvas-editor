@@ -109,6 +109,7 @@ export default {
     loadRelative: false,
     image: null,
     selectedShape: null,
+    backgroundImage: null,
   }},
   props: {
     width: {type: Number, default: 600},
@@ -158,7 +159,11 @@ export default {
   },
   mounted() {
     this.image = new xrx.drawing.Drawing(this.$refs.canvas)
+    this.$on('mode-change', (from, to) => {
+      this.selectedShape = null
+    })
     // this.image.eventShapeModify = () => this.applyStyles()
+    // this.image.eventViewboxChange = () => this.applyStyles()
     this.image.eventShapeCreated = () => {
       this.setMode('HoverMult')
       this.applyStyles()
@@ -167,7 +172,6 @@ export default {
       this.selectedShape = shape
     }
     this.backgroundImage = this.initialImage
-    // this.image.eventViewboxChange = () => this.applyStyles()
     this.loadImage()
   },
   methods: {
@@ -183,6 +187,7 @@ export default {
     setMode(mode, ...args) {
       if (mode === 'HoverMult') this.image.setModeHover(true);
       else this.image[`setMode${mode}`](...args);
+      this.$emit('mode-change', this.mode, mode)
       this.mode = mode
     },
     zoom(amount) {
@@ -215,6 +220,11 @@ export default {
         }
       }
     },
+    copyShape() {
+      const svg = XrxUtils.svgFromShapes(this.image.getSelectedShape())
+      XrxUtils.drawFromSvg(svg, this.image)
+      this.applyStyles()
+    },
     showImexport(imexport) {
       this.imexport = imexport
       this.svgImExPort = (this.imexport === 'import')  
@@ -231,11 +241,6 @@ export default {
     showImageModal() {
       $(this.$refs.imageModal).modal('show')
     },
-    copyShape() {
-      const svg = XrxUtils.svgFromShapes(this.image.getSelectedShape())
-      XrxUtils.drawFromSvg(svg, this.image)
-      this.applyStyles()
-    }
 
   }
 }
