@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Draw shapes on canvases with semtonotes in Vue",
   "author": "kba",
+  "main": "dist/xrxeditor.js",
   "peerDependencies": {
     "semtonotes-client": "^0.1.2",
     "vue": "^2.2.2"
