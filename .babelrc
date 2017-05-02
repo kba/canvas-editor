@@ -1,14 +1,8 @@
 {
   "presets": [
-    ["env", { "modules": false }],
-    "stage-2"
+    "env",
+    "stage-2",
+    "es2017"
   ],
   "plugins": ["transform-runtime"],
-  "comments": false,
-  "env": {
-    "test": {
-      "presets": ["env", "stage-2"],
-      "plugins": [ "istanbul" ]
-    }
-  }
 }
