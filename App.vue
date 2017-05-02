@@ -98,7 +98,6 @@
 </template>
 
 <script>
-import xrx from 'semtonotes-client'
 import XrxUtils from 'semtonotes-utils'
 
 export default {
@@ -163,7 +162,7 @@ export default {
     }}},
   },
   mounted() {
-    this.image = new xrx.drawing.Drawing(this.$refs.canvas)
+    this.image = XrxUtils.createDrawing(this.$refs.canvas, this.width, this.height)
     this.$on('mode-change', (from, to) => {
       this.selectedShape = null
     })
