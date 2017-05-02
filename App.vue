@@ -39,9 +39,9 @@
           img(src="./assets/line.svg")
       .input-group
         span.input-group-addon.hidden-sm.hidden-xs File
-        button.btn.btn-default(title="Save SVG",@click="showImexport('export')")
+        button.btn.btn-default(title="Save SVG",@click="showExport")
           img(src="./assets/save.svg")
-        button.btn.btn-default(title="Load SVG",@click="showImexport('import')")
+        button.btn.btn-default(title="Load SVG",@click="showImport")
           img(src="./assets/upload.svg")
         button.btn.btn-default(title="Background Image",@click="showImageModal")
           img(src="./assets/image.svg")
@@ -71,21 +71,28 @@
     v-bind:style="`width: ${width}; height: ${height}`"
   )
 
-  // SVG Import/Export Modal
-  .imexport-modal.modal.fade(role='dialog', ref="imexportModal", tabindex=-1)
+  // SVG Import Modal
+  .import-modal.modal.fade(role='dialog', ref="importModal", tabindex=-1)
     .modal-dialog
       .modal-content
-        .modal-header(v-if='imexport == "import"') Import from SVG
-        .modal-header(v-else) Export as SVG
+        .modal-header Import from SVG
         .modal-body
-          textarea.form-control(v-model="svgImExPort", placeholder="SVG here")
-          template(v-if="imexport == 'import'")
+          textarea.form-control(v-model="svgImport", placeholder="SVG here")
+          template
             .form-group.row
               .col-xs-3
                 label(for="svgLoadRelative") Load Relative
               .col-xs-9
                 input.form-control(id="svgLoadRelative",type="checkbox",v-model="loadRelative")
             button.form-control.btn.btn-success(@click="loadSvg") Load
+
+  // SVG Export Modal
+  .export-modal.modal.fade(role='dialog', ref="exportModal", tabindex=-1)
+    .modal-dialog
+      .modal-content
+        .modal-header Export as SVG
+        .modal-body
+          textarea.form-control(v-model="svgExport", placeholder="SVG here")
 
   // Background image modal
   .image-modal.modal.fade(role='dialog', ref="imageModal", tabindex=-1)
@@ -105,9 +112,9 @@ export default {
   name: 'xrx-vue',
   data() { return {
     mode: this.initialMode,
-    svgImExPort: '',
+    svgExport: '',
+    svgImport: '',
     zoomValue: this.initialZoom,
-    imexport: 'import',
     loadRelative: false,
     image: null,
     selectedShape: null,
@@ -219,28 +226,28 @@ export default {
 
   },
 
-/**
- * ### Events
- * 
- * #### `viewbox-changed`
- * The viewbox (visible layer) has changed.
- *
- * #### `shape-modified(shape)`
- * An existing shape `shape` was changed.
- *
- * #### `shape-created(shape)`
- * A new shape `shape` was created.
- *
- * #### `shape-selected(shape)`
- * A shape `shape` has been selected by the user.
- *
- * #### `mode-changed(from, to)`
- * The mode changed, it was `from`, now it is `to`.
- *
- * #### `svg-changed(svg)`
- * The SVG changed to `svg`
- *
- */
+  /**
+   * ### Events
+   * 
+   * #### `viewbox-changed`
+   * The viewbox (visible layer) has changed.
+   *
+   * #### `shape-modified(shape)`
+   * An existing shape `shape` was changed.
+   *
+   * #### `shape-created(shape)`
+   * A new shape `shape` was created.
+   *
+   * #### `shape-selected(shape)`
+   * A shape `shape` has been selected by the user.
+   *
+   * #### `mode-changed(from, to)`
+   * The mode changed, it was `from`, now it is `to`.
+   *
+   * #### `svg-changed(svg)`
+   * The SVG changed to `svg`
+   *
+   */
   mounted() {
     this.image = XrxUtils.createDrawing(this.$refs.canvas, this.width, this.height)
     this.image.eventViewboxChange = () => this.$emit('viewbox-changed')
@@ -252,19 +259,18 @@ export default {
       this.selectedShape = shape
     })
     this.$on('shape-modified', (shape) => {
-      this.svgImExPort = XrxUtils.svgFromDrawing(this.image)
+      this.svgExport = XrxUtils.svgFromDrawing(this.image)
     })
     this.$on('shape-created', (shape) => {
       this.setMode('HoverMult')
       this.applyStyles()
-      this.svgImExPort = XrxUtils.svgFromDrawing(this.image)
+      this.svgExport = XrxUtils.svgFromDrawing(this.image)
       document.activeElement.blur()
     })
     this.$on('mode-changed', (from, to) => {
       this.selectedShape = null
     })
-    this.$watch(() => this.svgImExPort, (svg) => this.$emit('svg-changed', svg))
-    this.$on('svg-changed', x=>console.log(x))
+    this.$watch(() => this.svgExport, (svg) => this.$emit('svg-changed', svg))
 
     this.backgroundImage = this.initialImage
     this.loadImage()
@@ -384,20 +390,22 @@ export default {
     },
 
     /**
-     * #### `showImexport(impexport)`
+     * #### `showImport()`
      *
-     * Show the import/export modal
-     *
-     * `imexport` can be one of
-     * - `import` 
-     * - `export`
+     * Show the import modal
      */
-    showImexport(imexport) {
-      this.imexport = imexport
-      this.svgImExPort = (this.imexport === 'import')  
-        ? '' 
-        : XrxUtils.svgFromDrawing(this.image)
-      $(this.$refs.imexportModal).modal('show')
+    showImport() {
+      this.svgImport = ''
+      $(this.$refs.importModal).modal('show')
+    },
+
+    /**
+     * #### `showExport()`
+     *
+     * Show the export modal
+     */
+    showExport() {
+      $(this.$refs.exportModal).modal('show')
     },
 
     /**
@@ -407,9 +415,9 @@ export default {
      */
     loadSvg() {
       this.image.getLayerShape().removeShapes();
-      XrxUtils.drawFromSvg(this.svgImExPort, this.image, {relative: this.loadRelative})
+      XrxUtils.drawFromSvg(this.svgImport, this.image, {relative: this.loadRelative})
       this.applyStyles()
-      $(this.$refs.imexportModal).modal('hide')
+      $(this.$refs.importModal).modal('hide')
     },
 
     /**
@@ -449,7 +457,8 @@ export default {
     }
   }
 }
-.imexport-modal {
+.export-modal,
+.import-modal {
   textarea {
     font-family: monospace;
     min-height: 200px;

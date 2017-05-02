@@ -5,7 +5,7 @@
   "author": "kba",
   "main": "./dist/xrx-vue.js",
   "scripts": {
-    "prepublish": "webpack --config webpack.config.vue.js"
+    "prepublish": "webpack -p"
   },
   "peerDependencies": {
     "semtonotes-client": "^0.1.2",

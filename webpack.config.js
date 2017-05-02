@@ -1,23 +1,18 @@
 var webpack = require('webpack')
 
 module.exports = {
-    entry: "./main.js",
-    devtool: 'source-map',
-    node: { fs: 'empty' },
+    entry: "./index.js",
     output: {
         path: __dirname + "/dist",
-        filename: "xrxeditor.js",
+        filename: "xrx-vue.js",
+        library: 'XrxVue',
+        libraryTarget: 'umd',
     },
     externals: {
         jquery: "$",
         bootstrap: 'bootstrap',
         vue: 'Vue',
         'semtonotes-client': 'xrx',
-    },
-    resolve: {
-        alias: {
-            'vue$': 'vue/dist/vue.common.js'
-        }
     },
     module: {
         loaders: [
@@ -43,10 +38,5 @@ module.exports = {
             },
             {test: /(png|jpg|svg)$/i, loader: "url-loader"},
         ],
-    },
-    plugins: [
-        new webpack.DefinePlugin({ 'process.env': {
-            NODE_ENV: `"${process.env.NODE_ENV}"`,
-        }})
-    ]
+    }
 }
