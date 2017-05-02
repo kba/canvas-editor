@@ -172,6 +172,7 @@ export default {
     this.image.eventShapeCreated = () => {
       this.setMode('HoverMult')
       this.applyStyles()
+      document.activeElement.blur()
     }
     this.image.eventShapeSelected = (shape) =>{
       this.selectedShape = shape
