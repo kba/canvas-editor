@@ -1,6 +1,6 @@
 <template lang="pug">
 .panel.panel-default
-  .panel-heading
+  .panel-heading(v-if="showToolbar")
     .form-inline.xrx-toolbar
       .input-group
         span.input-group-addon.hidden-sm.hidden-xs Mode
@@ -109,10 +109,12 @@ export default {
     loadRelative: false,
     image: null,
     selectedShape: null,
+    backgroundImage: null,
   }},
   props: {
     width: {type: Number, default: 600},
     height: {type: Number, default: 400},
+    showToolbar: {type: Boolean, default: true},
     zoomFactorMax: {type: Number, default: 4},
     initialZoom: {type: Number, default: 1},
     initialImage: {type: String, default: './assets/earth.jpg'},
@@ -158,7 +160,11 @@ export default {
   },
   mounted() {
     this.image = new xrx.drawing.Drawing(this.$refs.canvas)
+    this.$on('mode-change', (from, to) => {
+      this.selectedShape = null
+    })
     // this.image.eventShapeModify = () => this.applyStyles()
+    // this.image.eventViewboxChange = () => this.applyStyles()
     this.image.eventShapeCreated = () => {
       this.setMode('HoverMult')
       this.applyStyles()
@@ -167,7 +173,7 @@ export default {
       this.selectedShape = shape
     }
     this.backgroundImage = this.initialImage
-    // this.image.eventViewboxChange = () => this.applyStyles()
+    this.setMode(this.mode)
     this.loadImage()
   },
   methods: {
@@ -183,6 +189,7 @@ export default {
     setMode(mode, ...args) {
       if (mode === 'HoverMult') this.image.setModeHover(true);
       else this.image[`setMode${mode}`](...args);
+      this.$emit('mode-change', this.mode, mode)
       this.mode = mode
     },
     zoom(amount) {
@@ -212,8 +219,14 @@ export default {
       } else {
         if (window.confirm("Delete selected shape?")) {
           this.image.removeShape(this.image.getSelectedShape())
+          this.setMode(this.initialMode)
         }
       }
+    },
+    copyShape() {
+      const svg = XrxUtils.svgFromShapes(this.image.getSelectedShape())
+      XrxUtils.drawFromSvg(svg, this.image)
+      this.applyStyles()
     },
     showImexport(imexport) {
       this.imexport = imexport
@@ -231,11 +244,6 @@ export default {
     showImageModal() {
       $(this.$refs.imageModal).modal('show')
     },
-    copyShape() {
-      const svg = XrxUtils.svgFromShapes(this.image.getSelectedShape())
-      XrxUtils.drawFromSvg(svg, this.image)
-      this.applyStyles()
-    }
 
   }
 }
