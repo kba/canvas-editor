@@ -124,6 +124,7 @@ export default {
     image: null,
     selectedShape: null,
     thumbVisible: false,
+    thumbHovered: false,
     backgroundImage: null,
   }},
   /*
@@ -285,15 +286,15 @@ export default {
 
     this._setupEvents()
 
+    this.$refs.thumb.addEventListener('mouseover', () => this.thumbHovered = true)
+    this.$refs.thumb.addEventListener('mouseleave', () => this.thumbHovered = false)
     this.image.getViewbox().setZoomFactorMax(this.zoomFactorMax)
     this.backgroundImage = this.initialImage
+    // TODO
     this.thumbImage = this.backgroundImage
+    if (this.initialSvg) this.svgImport = this.initialSvg
     this.loadImage()
     this.setMode(this.mode)
-    if (this.initialSvg) {
-      this.svgImport = this.initialSvg
-      this.loadSvg()
-    }
   },
 
   computed: {
@@ -527,7 +528,6 @@ export default {
   .panel-heading {
     padding: 0;
   }
-  /* .xrx-toolbar .input-group { display: inline-table !important }*/
   .xrx-toolbar {
     .input-group,
     select,
@@ -554,7 +554,7 @@ export default {
     &.fade-out,
     &.fade-out *,
     {
-      transition: all 1000ms;
+      transition: all 500ms;
       z-index: -1000;
       opacity: 0;
     }
