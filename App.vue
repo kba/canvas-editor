@@ -292,7 +292,7 @@ export default {
     this.backgroundImage = this.initialImage
     // TODO
     this.thumbImage = this.backgroundImage
-    if (this.initialSvg) this.svgImport = this.initialSvg
+    if (this.initialSvg) this.svgExport = this.initialSvg
     this.loadImage()
     this.setMode(this.mode)
   },
@@ -357,6 +357,7 @@ export default {
       this.image.setBackgroundImage(this.backgroundImage, () => {
         this.svgImport = this.svgExport
         this.loadSvg()
+        this.image.getViewbox().fit(true)
         this.thumb.setBackgroundImage(this.backgroundImage, () => {
           this.thumb.getViewbox().fit()
         })
