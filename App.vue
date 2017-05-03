@@ -79,8 +79,7 @@
   div(style="position: relative")
     div(
       ref="image"
-      v-bind:style="`width: ${width}; height: ${height}`"
-    )
+      v-bind:style="`width: ${width}; height: ${height}`")
     div(
       ref="thumb"
       v-bind:class="{thumb, 'fade-out':!thumbVisible}"
@@ -117,7 +116,6 @@
 <script>
 import XrxUtils from 'semtonotes-utils'
 var thumbHideTimeoutId = null
-var thumbShowTimeoutId = null
 
 export default {
   name: 'xrx-vue',
@@ -310,7 +308,14 @@ export default {
 
     this._setupEvents()
 
-    this.thumbDiv.addEventListener('mouseover', () => this.hideThumb())
+    this.thumbDiv.addEventListener('mouseenter', () => this.thumbDiv.classList.add('invisible'))
+    let thumbShowTimeoutId = null
+    this.thumbDiv.addEventListener('mouseleave', () => {
+      clearTimeout(thumbShowTimeoutId)
+      thumbShowTimeoutId = setTimeout(() => {
+        this.thumbDiv.classList.remove('invisible')
+      }, 1000)
+    })
     this.image.getViewbox().setZoomFactorMax(this.zoomFactorMax)
     this.backgroundImage = this.initialImage
     // TODO
@@ -321,12 +326,10 @@ export default {
   },
 
   computed: {
-    imageDiv() {
-      return this.$refs.image
-    },
-    thumbDiv() {
-      return this.$refs.thumb
-    },
+    imageDiv() { return this.$refs.image },
+    thumbDiv() { return this.$refs.thumb },
+    imageCanvas() { return this.$refs.image.querySelector('canvas') },
+    thumbCanvas() { return this.$refs.thumb.querySelector('canvas') },
     thumbStyle() {
       return `
         width: ${this.thumbWidth}px;
@@ -542,17 +545,6 @@ export default {
      */
     showImageModal() {
       $(this.$refs.imageModal).modal('show')
-    },
-
-    hideThumb() {
-      this.thumbDiv.classList.add('invisible')
-      clearTimeout(thumbShowTimeoutId)
-      thumbShowTimeoutId = setTimeout(() => {
-        this.showThumb()
-        setTimeout(() => {
-          this.thumbDiv.classList.remove('invisible')
-        }, this.thumbTimeout)
-      }, this.thumbTimeout)
     },
 
     showThumb() {
