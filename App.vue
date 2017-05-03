@@ -74,7 +74,7 @@
   // Canvas
   div(style="position: relative")
     div(
-      ref="canvas"
+      ref="image"
       v-bind:style="`width: ${width}; height: ${height}`"
     )
     div(
@@ -112,7 +112,8 @@
 
 <script>
 import XrxUtils from 'semtonotes-utils'
-var timeoutId = null
+var thumbHideTimeoutId = null
+var thumbShowTimeoutId = null
 
 export default {
   name: 'xrx-vue',
@@ -124,10 +125,10 @@ export default {
     image: null,
     selectedShape: null,
     thumbVisible: false,
-    thumbHovered: false,
     backgroundImage: null,
   }},
-  /*
+
+  /**
    * ### Properties
    *
    */
@@ -281,13 +282,12 @@ export default {
    * 
    */
   mounted() {
-    this.image = XrxUtils.createDrawing(this.$refs.canvas, this.width, this.height)
-    this.thumb = XrxUtils.createDrawing(this.$refs.thumb, this.thumbWidth, this.thumbHeight)
+    this.image = XrxUtils.createDrawing(this.imageDiv, this.width, this.height)
+    this.thumb = XrxUtils.createDrawing(this.thumbDiv, this.thumbWidth, this.thumbHeight)
 
     this._setupEvents()
 
-    this.$refs.thumb.addEventListener('mouseover', () => this.thumbHovered = true)
-    this.$refs.thumb.addEventListener('mouseleave', () => this.thumbHovered = false)
+    this.thumbDiv.addEventListener('mouseover', () => this.hideThumb())
     this.image.getViewbox().setZoomFactorMax(this.zoomFactorMax)
     this.backgroundImage = this.initialImage
     // TODO
@@ -298,6 +298,12 @@ export default {
   },
 
   computed: {
+    imageDiv() {
+      return this.$refs.image
+    },
+    thumbDiv() {
+      return this.$refs.thumb
+    },
     thumbStyle() {
       return `
         width: ${this.thumbWidth}px;
@@ -338,11 +344,7 @@ export default {
       this.$on('viewbox-changed', () => {
         this.zoomValue = this.image.getViewbox().getZoomValue()
         XrxUtils.navigationThumb(this.thumb, this.image)
-        this.thumbVisible = true;
-        if (this.thumbTimeout > 0) {
-          if (timeoutId) clearTimeout(timeoutId)
-          timeoutId = setTimeout(() => this.thumbVisible = false, this.thumbTimeout)
-        }
+        this.showThumb()
       })
     },
 
@@ -517,6 +519,23 @@ export default {
      */
     showImageModal() {
       $(this.$refs.imageModal).modal('show')
+    },
+
+    hideThumb() {
+      this.thumbDiv.classList.add('invisible')
+      clearTimeout(thumbShowTimeoutId)
+      thumbShowTimeoutId = setTimeout(() => {
+        this.showThumb()
+        setTimeout(() => {
+          this.thumbDiv.classList.remove('invisible')
+        }, this.thumbTimeout)
+      }, this.thumbTimeout)
+    },
+
+    showThumb() {
+      this.thumbVisible = true;
+      clearTimeout(thumbHideTimeoutId)
+      thumbHideTimeoutId = setTimeout(() => this.thumbVisible = false, this.thumbTimeout)
     },
 
   }
