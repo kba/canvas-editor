@@ -70,9 +70,9 @@
               a(href='#',@click="zoom('height')") Fit to height
       .input-group.btn-group(v-if="showToolbarRotate")
         span.input-group-addon.hidden-sm.hidden-xs.hidden-md Rotate
-        button.btn.btn-default(title="Rotate right",@click="rotate('right')")
+        button.btn.btn-default(title="Rotate right",@click="rotate('Left')")
           img(src="./assets/rotate-right.svg")
-        button.btn.btn-default(title="Rotate left",@click="rotate('left')")
+        button.btn.btn-default(title="Rotate left",@click="rotate('Right')")
           img(src="./assets/rotate-left.svg")
 
   // Canvas
@@ -118,7 +118,9 @@ import XrxUtils from 'semtonotes-utils'
 var thumbHideTimeoutId = null
 
 export default {
+
   name: 'xrx-vue',
+
   data() { return {
     mode: this.initialMode,
     svgExport: '',
@@ -144,10 +146,13 @@ export default {
      * #### `height`
      * Height of the canvas (**not** the image). Default: `400`
      */
-    width: {type: Number, default: 600},
+    width:  {type: Number, default: 600},
     height: {type: Number, default: 400},
 
     /**
+     * 
+     * #### `enable-thumb`
+     * Whether the thumb navigation is enabled. Defaut: `true`
      * 
      * #### `thumbWidth`
      * Width of the nav thumb (**not** the thumbnail image). Default: `120`
@@ -159,8 +164,9 @@ export default {
      * Time in ms after which to hide the thumb. Default: `1000`
      */
 
-    thumbWidth: {type: Number, default: 120},
-    thumbHeight: {type: Number, default: 120},
+    enableThumb:  {type: Boolean, default: false},
+    thumbWidth:   {type: Number, default: 120},
+    thumbHeight:  {type: Number, default: 120},
     thumbTimeout: {type: Number, default: 1000},
 
     /**
@@ -303,33 +309,14 @@ export default {
    * 
    */
   mounted() {
-    this.image = XrxUtils.createDrawing(this.imageDiv, this.width, this.height)
-    this.thumb = XrxUtils.createDrawing(this.thumbDiv, this.thumbWidth, this.thumbHeight)
+    this._initCanvas()
 
-    this._setupEvents()
-
-    this.thumbDiv.addEventListener('mouseenter', () => this.thumbDiv.classList.add('invisible'))
-    let thumbShowTimeoutId = null
-    this.thumbDiv.addEventListener('mouseleave', () => {
-      clearTimeout(thumbShowTimeoutId)
-      thumbShowTimeoutId = setTimeout(() => {
-        this.thumbDiv.classList.remove('invisible')
-      }, 1000)
-    })
-    this.image.getViewbox().setZoomFactorMax(this.zoomFactorMax)
-    this.backgroundImage = this.initialImage
-    // TODO
-    this.thumbImage = this.backgroundImage
-    if (this.initialSvg) this.svgExport = this.initialSvg
-    this.loadImage()
-    this.setMode(this.mode)
+    if (this.enableThumb) this._initThumb()
   },
 
   computed: {
     imageDiv() { return this.$refs.image },
     thumbDiv() { return this.$refs.thumb },
-    imageCanvas() { return this.$refs.image.querySelector('canvas') },
-    thumbCanvas() { return this.$refs.thumb.querySelector('canvas') },
     thumbStyle() {
       return `
         width: ${this.thumbWidth}px;
@@ -344,14 +331,48 @@ export default {
    */
   methods: {
 
-    _setupEvents() {
+    _initThumb() {
+      this.thumb = XrxUtils.createDrawing(this.thumbDiv, this.thumbWidth, this.thumbHeight)
+      this.$on('rotate', (amount) => this.thumb.getViewbox()[`rotate${amount}`]())
+      this.$on('load-image', (img) => {
+        this.thumb.setBackgroundImage(this.backgroundImage, () => {
+          this.thumb.getViewbox().fit()
+        })
+      })
+      this.$on('viewbox-changed', () => {
+        XrxUtils.navigationThumb(this.thumb, this.image)
+        this.showThumb()
+      })
+
+      this.thumbDiv.addEventListener('mouseenter', () => this.thumbDiv.classList.add('invisible'))
+      let thumbShowTimeoutId = null
+      // TODO
+      this.thumbImage = this.backgroundImage
+      this.thumbDiv.addEventListener('mouseleave', () => {
+        clearTimeout(thumbShowTimeoutId)
+        thumbShowTimeoutId = setTimeout(() => {
+          this.thumbDiv.classList.remove('invisible')
+        }, 1000)
+      })
+    },
+
+    _initCanvas() {
+      this.image = XrxUtils.createDrawing(this.imageDiv, this.width, this.height)
+      this.$on('rotate', (amount) => this.image.getViewbox()[`rotate${amount}`]())
+      this.$on('load-image', (img) => {
+        this.image.setBackgroundImage(this.backgroundImage, () => {
+          this.svgImport = this.svgExport
+          this.loadSvg()
+          this.image.getViewbox().fit(true)
+          this.image.draw()
+        })
+      })
       this.image.eventViewboxChange = () => this.$emit('viewbox-changed')
       this.image.eventShapeModify = (shape) => this.$emit('shape-modified', shape)
       this.image.eventShapeCreated = (shape) => this.$emit('shape-created', shape)
       this.image.eventShapeSelected = (shape) => this.$emit('shape-selected', shape)
       this.$watch(() => this.svgExport, (svg) => this.$emit('svg-changed', svg))
       this.$watch(() => this.zoomValue, (...args) => this.$emit('zoom-changed', ...args))
-
       this.$on('shape-selected', (shape) => {
         this.selectedShape = shape
       })
@@ -369,10 +390,15 @@ export default {
       })
       this.$on('viewbox-changed', () => {
         this.zoomValue = this.image.getViewbox().getZoomValue()
-        XrxUtils.navigationThumb(this.thumb, this.image)
-        this.showThumb()
       })
+
+      this.image.getViewbox().setZoomFactorMax(this.zoomFactorMax)
+      this.backgroundImage = this.initialImage
+      if (this.initialSvg) this.svgExport = this.initialSvg
+      this.loadImage()
+      this.setMode(this.mode)
     },
+
 
     /**
      * 
@@ -382,15 +408,7 @@ export default {
      */
     loadImage(img) {
       if (img) this.backgroundImage = img
-      this.image.setBackgroundImage(this.backgroundImage, () => {
-        this.svgImport = this.svgExport
-        this.loadSvg()
-        this.image.getViewbox().fit(true)
-        this.thumb.setBackgroundImage(this.backgroundImage, () => {
-          this.thumb.getViewbox().fit()
-        })
-        this.image.draw()
-      })
+      this.$emit('load-image', img)
     },
 
     /**
@@ -431,14 +449,14 @@ export default {
       this.image.draw()
     },
 
-    rotate(amount) {
-      if (amount === 'left') {
-        this.image.getViewbox().rotateLeft()
-        this.thumb.getViewbox().rotateLeft()
-      } else if (amount === 'right') {
-        this.image.getViewbox().rotateRight()
-        this.thumb.getViewbox().rotateRight()
-      }
+    /**
+     * 
+     * #### `rotate(amount)`
+     * 
+     * Rotate the canvas `Left` or `Right`.
+     */
+    rotate(...args) {
+      this.$emit('rotate', ...args)
     },
 
     /**
