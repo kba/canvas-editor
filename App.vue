@@ -227,10 +227,10 @@ export default {
 
     /**
      * 
-     * #### `initialImageBackground`
+     * #### `initialImage`
      * Initial background image to load.
      */
-    initialImageBackground: {type: String, default: './assets/earth.jpg', required: true},
+    initialImage: {type: String, default: './assets/earth.jpg', required: true},
 
     /**
      * 
@@ -257,8 +257,12 @@ export default {
     /**
      * 
      * #### `xrxStyle`
-     * Styles to use. Default: `[see source]`
+     * Styles to use for shapes in image. Default: `[see source]`
+     * 
+     * #### `thumbXrxStyle`
+     * Styles to use for thumb shapes. Default: `{}`
      */
+    thumbXrxStyle: {type: Object, default: () => {}},
     xrxStyle: {type: Object, default() { return {
       strokeColor: '#3B3BFF',
       fillColor: '#3B3BFF',
@@ -289,6 +293,7 @@ export default {
         fillOpacity: 0.4,
       },
     }}},
+
 
   },
 
@@ -364,7 +369,7 @@ export default {
         })
       })
       this.$on('viewbox-changed', () => {
-        XrxUtils.navigationThumb(this.thumb, this.image)
+        XrxUtils.navigationThumb(this.thumb, this.image, this.thumbXrxStyle)
         this.showThumb()
       })
 
@@ -438,7 +443,7 @@ export default {
       })
 
       this.image.getViewbox().setZoomFactorMax(this.zoomFactorMax)
-      this.imageBackground = this.initialImageBackground
+      this.imageBackground = this.initialImage
       if (this.initialSvg) this.svgExport = this.initialSvg
       this.setMode(this.mode)
     },
@@ -448,7 +453,7 @@ export default {
      * 
      * #### `loadImage(img)`
      * - `@param String img` URL of the image. Defaults to `this.imageBackground`
-     *   which defaults to [`initialImageBackground`](#initialimage)
+     *   which defaults to [`initialImage`](#initialimage)
      */
     loadImage(img, thumb) {
       if (img) this.imageBackground = img
