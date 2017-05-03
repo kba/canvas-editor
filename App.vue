@@ -64,6 +64,12 @@
               a(href='#',@click="zoom('width')") Fit to width
             li
               a(href='#',@click="zoom('height')") Fit to height
+      .input-group.btn-group
+        span.input-group-addon.hidden-sm.hidden-xs Rotate
+        button.btn.btn-default(title="Rotate right",@click="rotate('right')")
+          img(src="./assets/rotate-right.svg")
+        button.btn.btn-default(title="Rotate left",@click="rotate('left')")
+          img(src="./assets/rotate-left.svg")
 
   // Canvas
   div(style="position: relative")
@@ -330,7 +336,7 @@ export default {
       })
       this.$on('viewbox-changed', () => {
         this.zoomValue = this.image.getViewbox().getZoomValue()
-        this.updateThumb()
+        XrxUtils.navigationThumb(this.thumb, this.image)
         this.thumbVisible = true;
         if (this.thumbTimeout > 0) {
           if (timeoutId) clearTimeout(timeoutId)
@@ -393,6 +399,16 @@ export default {
       else this.image.getViewbox().zoomTo(amount)
       this.zoomValue = this.image.getViewbox().getZoomValue()
       this.image.draw()
+    },
+
+    rotate(amount) {
+      if (amount === 'left') {
+        this.image.getViewbox().rotateLeft()
+        this.thumb.getViewbox().rotateLeft()
+      } else if (amount === 'right') {
+        this.image.getViewbox().rotateRight()
+        this.thumb.getViewbox().rotateRight()
+      }
     },
 
     /**
@@ -496,11 +512,6 @@ export default {
      */
     showImageModal() {
       $(this.$refs.imageModal).modal('show')
-    },
-
-
-    updateThumb() {
-        XrxUtils.navigationThumb(this.thumb, this.image)
     },
 
   }
