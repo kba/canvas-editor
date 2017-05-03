@@ -540,10 +540,10 @@ export default {
      * Remove the currently selected shape
      */
     removeSelected() {
-      this.setMode('Select')
       if (window.confirm("Delete selected shape?")) {
-        this.image.removeShape(this.image.getSelectedShape())
+        this.image.removeShape(this.selectedShape)
         this.setMode(this.initialMode)
+        this.$emit('shape-unselected')
       }
       document.activeElement.blur()
     },
