@@ -84,11 +84,6 @@
         .modal-body
           textarea.form-control(v-model="svgImport", placeholder="SVG here")
           template
-            .form-group.row
-              .col-xs-3
-                label(for="svgLoadRelative") Load Relative
-              .col-xs-9
-                input.form-control(id="svgLoadRelative",type="checkbox",v-model="loadRelative")
             button.form-control.btn.btn-success(@click="loadSvg") Load
 
   // SVG Export Modal
@@ -120,7 +115,6 @@ export default {
     svgExport: '',
     svgImport: '',
     zoomValue: this.initialZoom,
-    loadRelative: false,
     image: null,
     selectedShape: null,
     thumbVisible: false,
@@ -291,8 +285,8 @@ export default {
     this.loadImage()
     this.setMode(this.mode)
     if (this.initialSvg) {
-      XrxUtils.drawFromSvg(this.initialSvg, this.image)
-      this.applyStyles()
+      this.svgImport = this.initialSvg
+      this.loadSvg()
     }
   },
 
@@ -354,7 +348,8 @@ export default {
     loadImage(img) {
       if (img) this.backgroundImage = img
       this.image.setBackgroundImage(this.backgroundImage, () => {
-        // this.image.getViewbox().fit(false)
+        this.svgImport = this.svgExport
+        this.loadSvg()
         this.thumb.setBackgroundImage(this.backgroundImage, () => {
           this.thumb.getViewbox().fit()
         })
@@ -488,7 +483,7 @@ export default {
      */
     loadSvg() {
       this.image.getLayerShape().removeShapes();
-      XrxUtils.drawFromSvg(this.svgImport, this.image, {relative: this.loadRelative})
+      XrxUtils.drawFromSvg(this.svgImport, this.image, {relative: true})
       this.applyStyles()
       $(this.$refs.importModal).modal('hide')
     },
