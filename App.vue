@@ -391,8 +391,7 @@ export default {
       this.$on('load-image', (img) => {
         img = img || this.imageBackground
         this.image.setBackgroundImage(img, () => {
-          this.svgImport = this.svgExport
-          this.loadSvg()
+          this.loadSvg(this.svgExport)
           this.image.getViewbox().fit(true)
           this.image.draw()
         })
@@ -444,7 +443,6 @@ export default {
 
       this.image.getViewbox().setZoomFactorMax(this.zoomFactorMax)
       this.imageBackground = this.initialImage
-      if (this.initialSvg) this.svgExport = this.initialSvg
       this.setMode(this.mode)
     },
 
@@ -591,11 +589,12 @@ export default {
 
     /**
      * 
-     * #### `loadSvg()`
+     * #### `loadSvg(svg)`
      * 
      * Load the SVG
      */
-    loadSvg() {
+    loadSvg(svg) {
+      if (svg) this.svgImport = svg
       this.image.getLayerShape().removeShapes();
       XrxUtils.drawFromSvg(this.svgImport, this.image, {relative: true})
       this.applyStyles()

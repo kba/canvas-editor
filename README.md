@@ -52,7 +52,7 @@
 		* [`copySelected()`](#copyselected)
 		* [`showImport()`](#showimport)
 		* [`showExport()`](#showexport)
-		* [`loadSvg()`](#loadsvg)
+		* [`loadSvg(svg)`](#loadsvgsvg)
 		* [`showImageModal()`](#showimagemodal)
 
 <!-- END-MARKDOWN-TOC -->
@@ -224,7 +224,7 @@ Show the import modal
 
 Show the export modal
 
-#### `loadSvg()`
+#### `loadSvg(svg)`
 
 Load the SVG
 
