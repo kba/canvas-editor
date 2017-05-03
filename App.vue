@@ -81,6 +81,7 @@
       ref="image"
       v-bind:style="`width: ${width}; height: ${height}`")
     div(
+      v-if="enableThumb"
       ref="thumb"
       v-bind:class="{thumb, 'fade-out':!thumbVisible}"
       v-bind:style="thumbStyle")
@@ -335,7 +336,8 @@ export default {
   mounted() {
     this._initCanvas()
 
-    if (this.enableThumb) this._initThumb()
+    if (this.enableThumb)
+      this._initThumb()
 
     this.loadImage()
   },
