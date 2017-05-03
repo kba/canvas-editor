@@ -98,7 +98,7 @@
       .modal-content
         .modal-header Export as SVG
         .modal-body
-          textarea.form-control(v-model="svgExport", placeholder="SVG here")
+          textarea.form-control(v-model="svgExport", placeholder="SVG here", readonly)
 
   // Background image modal
   .image-modal.modal.fade(role='dialog', ref="imageModal", tabindex=-1)
@@ -488,6 +488,9 @@ export default {
      * Show the export modal
      */
     showExport() {
+      $(this.$refs.exportModal).one('shown.bs.modal', () => {
+        this.$refs.exportModal.querySelector('textarea').select()
+      })
       $(this.$refs.exportModal).modal('show')
     },
 
