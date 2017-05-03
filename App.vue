@@ -63,7 +63,7 @@
             li
               a(href='#',@click="zoom('width')") Fit to width
             li
-              a(href='#',@click="zoom('width')") Fit to height
+              a(href='#',@click="zoom('height')") Fit to height
 
   // Canvas
   div(style="position: relative")
