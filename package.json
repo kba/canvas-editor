@@ -1,6 +1,6 @@
 {
   "name": "@kba/xrx-vue",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Draw shapes on canvases with semtonotes in Vue",
   "author": "kba",
   "main": "./dist/xrx-vue.js",
