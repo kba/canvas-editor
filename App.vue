@@ -21,11 +21,11 @@
             v-bind:disabled="modesAvailable.find(x => x.value == value).disabled"
             v-bind:selected="value == mode"
           ) {{ modesAvailable.find(x => x.value == value).text }}
-      .input-group.btn-group(v-if="mode === 'Select'")
+      .input-group.btn-group(v-if="selectedShape")
         span.input-group-addon.hidden-xs.hidden-sm.hidden-md Action
-        button.btn.btn-default(title="Copy",@click="copySelected",v-bind:disabled="!selectedShape")
+        button.btn.btn-default(title="Copy",@click="copySelected")
           img(src="./assets/copy.svg")
-        button.btn.btn-default(title="Remove",@click="removeSelected",v-bind:disabled="!selectedShape")
+        button.btn.btn-default(title="Remove",@click="removeSelected")
           img(src="./assets/remove.svg")
       .input-group.btn-group(v-if="showToolbarShapes")
         span.input-group-addon.hidden-xs.hidden-sm.hidden-md Shape
@@ -127,8 +127,8 @@ export default {
     svgImport: '',
     zoomValue: this.initialZoom,
     image: null,
-    selectedShape: null,
     thumbVisible: false,
+    selectedShape: null,
     imageBackground: null,
   }},
 
@@ -276,6 +276,12 @@ export default {
         strokeWidth: 3,
         fillOpacity: 0.4,
       },
+      modifiable: {
+        strokeColor: '#ff008f',
+        fillColor: '#ff008f',
+        strokeWidth: 3,
+        fillOpacity: 0.4,
+      },
       selectable: {
         strokeColor: '#ff00ff',
         fillColor: '#ff00ff',
@@ -396,23 +402,39 @@ export default {
       this.image.eventShapeHoverOut   = (shape) => this.$emit('shape-hover-out', shape)
       this.$watch(() => this.svgExport, (svg) => this.$emit('svg-changed', svg))
       this.$watch(() => this.zoomValue, (...args) => this.$emit('zoom-changed', ...args))
-      this.$on('shape-selected', (shape) => {
+      this.$on('shape-activated', (shape) => {
         this.selectedShape = shape
+      })
+      this.$on('shape-selected', (shape) => {
+        this.$emit('shape-unselected', this.selectedShape)
+        this.selectedShape = this.image.getSelectedShape()
+      })
+      this.$on('shape-unselected', (shape) => {
+        if (shape) {
+          shape.getModifiable().selectOff()
+        }
+        this.selectedShape = null;
       })
       this.$on('shape-modified', (shape) => {
         this.svgExport = XrxUtils.svgFromDrawing(this.image)
       })
       this.$on('shape-created', (shape) => {
-        this.setMode('HoverMult')
         this.applyStyles()
+        this.setMode('Modify')
+        this.image.getLayerShapeModify().activate(shape.getModifiable())
+        shape.getModifiable().selectOn()
         this.svgExport = XrxUtils.svgFromDrawing(this.image)
         document.activeElement.blur()
       })
       this.$on('mode-changed', (from, to) => {
-        this.selectedShape = null
+        if (to === 'Hover' || to === 'HoverMult') {
+          this.$emit('shape-unselected', this.selectedShape)
+        }
       })
       this.$on('viewbox-changed', () => {
         this.zoomValue = this.image.getViewbox().getZoomValue()
+        if (this.mode !== 'Modify')
+          this.selectedShape = this.image.getSelectedShape()
       })
 
       this.image.getViewbox().setZoomFactorMax(this.zoomFactorMax)
@@ -518,14 +540,12 @@ export default {
      * Remove the currently selected shape
      */
     removeSelected() {
-      if (!this.image.getSelectedShape()) {
-        window.alert("Please select a shape")
-      } else {
-        if (window.confirm("Delete selected shape?")) {
-          this.image.removeShape(this.image.getSelectedShape())
-          this.setMode(this.initialMode)
-        }
+      this.setMode('Select')
+      if (window.confirm("Delete selected shape?")) {
+        this.image.removeShape(this.image.getSelectedShape())
+        this.setMode(this.initialMode)
       }
+      document.activeElement.blur()
     },
 
     /**
