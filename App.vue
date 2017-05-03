@@ -302,6 +302,15 @@ export default {
    * #### `shape-selected(shape)`
    * A shape `shape` has been selected by the user.
    * 
+   * #### `shape-activated(shape)`
+   * Shape `shape` is modifiable and has been activated
+   * 
+   * #### `shape-hover-in(shape)`
+   * `mouseenter` on the `shape`.
+   * 
+   * #### `shape-hover-out(shape)`
+   * `mouseleave` on the `shape`.
+   * 
    * #### `mode-changed(from, to)`
    * The mode changed, it was `from`, now it is `to`.
    * 
@@ -377,10 +386,14 @@ export default {
           this.image.draw()
         })
       })
-      this.image.eventViewboxChange = () => this.$emit('viewbox-changed')
-      this.image.eventShapeModify = (shape) => this.$emit('shape-modified', shape)
-      this.image.eventShapeCreated = (shape) => this.$emit('shape-created', shape)
-      this.image.eventShapeSelected = (shape) => this.$emit('shape-selected', shape)
+      this.image.eventViewboxChange   = () => this.$emit('viewbox-changed')
+      this.image.eventShapeModify     = (shape) => this.$emit('shape-modified', shape)
+      this.image.eventShapeActivated  = (shape) => this.$emit('shape-activated', shape)
+      this.image.eventShapeCreated    = (shape) => this.$emit('shape-created', shape)
+      this.image.eventShapeSelected   = (shape) => this.$emit('shape-selected', shape)
+      this.image.eventShapeUnselected = (shape) => this.$emit('shape-unselected', shape)
+      this.image.eventShapeHoverIn    = (shape) => this.$emit('shape-hover-in', shape)
+      this.image.eventShapeHoverOut   = (shape) => this.$emit('shape-hover-out', shape)
       this.$watch(() => this.svgExport, (svg) => this.$emit('svg-changed', svg))
       this.$watch(() => this.zoomValue, (...args) => this.$emit('zoom-changed', ...args))
       this.$on('shape-selected', (shape) => {
