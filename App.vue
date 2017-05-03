@@ -275,6 +275,9 @@ export default {
    * #### `svg-changed(svg)`
    * The SVG changed to `svg`
    * 
+   * #### `zoom-changed(now, before)`
+   * Zoom value changed from `before` to `now`
+   * 
    */
   mounted() {
     this.image = XrxUtils.createDrawing(this.$refs.canvas, this.width, this.height)
@@ -282,6 +285,7 @@ export default {
 
     this._setupEvents()
 
+    this.image.getViewbox().setZoomFactorMax(this.zoomFactorMax)
     this.backgroundImage = this.initialImage
     this.thumbImage = this.backgroundImage
     this.loadImage()
@@ -313,6 +317,7 @@ export default {
       this.image.eventShapeCreated = (shape) => this.$emit('shape-created', shape)
       this.image.eventShapeSelected = (shape) => this.$emit('shape-selected', shape)
       this.$watch(() => this.svgExport, (svg) => this.$emit('svg-changed', svg))
+      this.$watch(() => this.zoomValue, (...args) => this.$emit('zoom-changed', ...args))
 
       this.$on('shape-selected', (shape) => {
         this.selectedShape = shape
@@ -330,6 +335,7 @@ export default {
         this.selectedShape = null
       })
       this.$on('viewbox-changed', () => {
+        this.zoomValue = this.image.getViewbox().getZoomValue()
         this.updateThumb()
         this.thumbVisible = true;
         if (this.thumbTimeout > 0) {
@@ -348,9 +354,7 @@ export default {
     loadImage(img) {
       if (img) this.backgroundImage = img
       this.image.setBackgroundImage(this.backgroundImage, () => {
-        this.image.getViewbox().fit(false)
-        this.image.getViewbox().setZoomFactorMax(this.zoomFactorMax)
-        this.zoomValue = this.image.getViewbox().getZoomValue()
+        // this.image.getViewbox().fit(false)
         this.thumb.setBackgroundImage(this.backgroundImage, () => {
           this.thumb.getViewbox().fit()
         })
