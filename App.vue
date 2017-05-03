@@ -109,8 +109,8 @@
       .modal-content
         .modal-header Set background image
         .modal-body
-          input.form-control(format='url', v-model="backgroundImage", placeholder="Image URL")
-          button.form-control.btn.btn-success(@click="loadImage(this.backgroundImage)") Set background image
+          input.form-control(format='url', v-model="imageBackground", placeholder="Image URL")
+          button.form-control.btn.btn-success(@click="loadImage(this.imageBackground)") Set background image
 </template>
 
 <script>
@@ -129,7 +129,7 @@ export default {
     image: null,
     selectedShape: null,
     thumbVisible: false,
-    backgroundImage: null,
+    imageBackground: null,
   }},
 
   /**
@@ -157,6 +157,9 @@ export default {
      * #### `thumbWidth`
      * Width of the nav thumb (**not** the thumbnail image). Default: `120`
      * 
+     * #### `thumbBackground`
+     * Fixed thumbnail image. Default: `''` (none, use current canvas image)
+     * 
      * #### `thumbHeight`
      * Height of the nav thumb (**not** the thumbnail image). Default: `120`
      * 
@@ -164,10 +167,11 @@ export default {
      * Time in ms after which to hide the thumb. Default: `1000`
      */
 
-    enableThumb:  {type: Boolean, default: false},
-    thumbWidth:   {type: Number, default: 120},
-    thumbHeight:  {type: Number, default: 120},
-    thumbTimeout: {type: Number, default: 1000},
+    enableThumb:     {type: Boolean, default: true},
+    thumbBackground: {type: String, default: ''},
+    thumbWidth:      {type: Number, default: 120},
+    thumbHeight:     {type: Number, default: 120},
+    thumbTimeout:    {type: Number, default: 1000},
 
     /**
      * 
@@ -223,10 +227,10 @@ export default {
 
     /**
      * 
-     * #### `initialImage`
+     * #### `initialImageBackground`
      * Initial background image to load.
      */
-    initialImage: {type: String, default: './assets/earth.jpg', required: true},
+    initialImageBackground: {type: String, default: './assets/earth.jpg', required: true},
 
     /**
      * 
@@ -312,6 +316,8 @@ export default {
     this._initCanvas()
 
     if (this.enableThumb) this._initThumb()
+
+    this.loadImage()
   },
 
   computed: {
@@ -334,9 +340,12 @@ export default {
     _initThumb() {
       this.thumb = XrxUtils.createDrawing(this.thumbDiv, this.thumbWidth, this.thumbHeight)
       this.$on('rotate', (amount) => this.thumb.getViewbox()[`rotate${amount}`]())
-      this.$on('load-image', (img) => {
-        this.thumb.setBackgroundImage(this.backgroundImage, () => {
+      this.$on('load-image', (img, thumbBackground) => {
+        thumbBackground = thumbBackground || this.thumbBackground || this.imageBackground
+        console.log({thumbBackground})
+        this.thumb.setBackgroundImage(thumbBackground, () => {
           this.thumb.getViewbox().fit()
+          this.thumb.draw()
         })
       })
       this.$on('viewbox-changed', () => {
@@ -347,7 +356,7 @@ export default {
       this.thumbDiv.addEventListener('mouseenter', () => this.thumbDiv.classList.add('invisible'))
       let thumbShowTimeoutId = null
       // TODO
-      this.thumbImage = this.backgroundImage
+      this.thumbImage = this.imageBackground
       this.thumbDiv.addEventListener('mouseleave', () => {
         clearTimeout(thumbShowTimeoutId)
         thumbShowTimeoutId = setTimeout(() => {
@@ -360,7 +369,8 @@ export default {
       this.image = XrxUtils.createDrawing(this.imageDiv, this.width, this.height)
       this.$on('rotate', (amount) => this.image.getViewbox()[`rotate${amount}`]())
       this.$on('load-image', (img) => {
-        this.image.setBackgroundImage(this.backgroundImage, () => {
+        img = img || this.imageBackground
+        this.image.setBackgroundImage(img, () => {
           this.svgImport = this.svgExport
           this.loadSvg()
           this.image.getViewbox().fit(true)
@@ -393,9 +403,8 @@ export default {
       })
 
       this.image.getViewbox().setZoomFactorMax(this.zoomFactorMax)
-      this.backgroundImage = this.initialImage
+      this.imageBackground = this.initialImageBackground
       if (this.initialSvg) this.svgExport = this.initialSvg
-      this.loadImage()
       this.setMode(this.mode)
     },
 
@@ -403,12 +412,12 @@ export default {
     /**
      * 
      * #### `loadImage(img)`
-     * - `@param String img` URL of the image. Defaults to `this.backgroundImage`
-     *   which defaults to [`initialImage`](#initialimage)
+     * - `@param String img` URL of the image. Defaults to `this.imageBackground`
+     *   which defaults to [`initialImageBackground`](#initialimage)
      */
-    loadImage(img) {
-      if (img) this.backgroundImage = img
-      this.$emit('load-image', img)
+    loadImage(img, thumb) {
+      if (img) this.imageBackground = img
+      this.$emit('load-image', img, thumb)
     },
 
     /**

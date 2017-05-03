@@ -9,7 +9,8 @@ new Vue({
   el: '#app',
   template: `<App
     ref="zoneEditor"
-    initialImage='https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Ghostscript_Tiger.svg/1024px-Ghostscript_Tiger.svg.png'
+    thumb-background='https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Ghostscript_Tiger.svg/100px-Ghostscript_Tiger.svg.png'
+    initial-image-background='https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Ghostscript_Tiger.svg/1024px-Ghostscript_Tiger.svg.png'
     @zoom-changed="onZoomChange"
     />`,
   methods: {
