@@ -66,10 +66,15 @@
               a(href='#',@click="zoom('width')") Fit to height
 
   // Canvas
-  div(
-    ref="canvas",
-    v-bind:style="`width: ${width}; height: ${height}`"
-  )
+  div(style="position: relative")
+    div(
+      ref="canvas"
+      v-bind:style="`width: ${width}; height: ${height}`"
+    )
+    div(
+      ref="thumb"
+      v-bind:class="{thumb, 'fade-out':!thumbVisible}"
+      v-bind:style="thumbStyle")
 
   // SVG Import Modal
   .import-modal.modal.fade(role='dialog', ref="importModal", tabindex=-1)
@@ -101,12 +106,12 @@
         .modal-header Set background image
         .modal-body
           input.form-control(format='url', v-model="backgroundImage", placeholder="Image URL")
-          button.form-control.btn.btn-success(@click="loadImage") Set background image
+          button.form-control.btn.btn-success(@click="loadImage(this.backgroundImage)") Set background image
 </template>
 
 <script>
 import XrxUtils from 'semtonotes-utils'
-
+var timeoutId = null
 
 export default {
   name: 'xrx-vue',
@@ -118,6 +123,7 @@ export default {
     loadRelative: false,
     image: null,
     selectedShape: null,
+    thumbVisible: false,
     backgroundImage: null,
   }},
   /*
@@ -127,60 +133,74 @@ export default {
   props: {
 
     /**
+     * 
      * #### `width`
      * Width of the canvas (**not** the image). Default: `600`
-     */
-    width: {type: Number, default: 600},
-
-    /**
+     * 
      * #### `height`
      * Height of the canvas (**not** the image). Default: `400`
      */
+    width: {type: Number, default: 600},
     height: {type: Number, default: 400},
 
     /**
+     * 
+     * #### `thumbWidth`
+     * Width of the nav thumb (**not** the thumbnail image). Default: `120`
+     * 
+     * #### `thumbHeight`
+     * Height of the nav thumb (**not** the thumbnail image). Default: `120`
+     * 
+     * #### `thumbTimeout`
+     * Time in ms after which to hide the thumb. Default: `1000`
+     */
+
+    thumbWidth: {type: Number, default: 120},
+    thumbHeight: {type: Number, default: 120},
+    thumbTimeout: {type: Number, default: 1000},
+
+    /**
+     * 
      * #### `showToolbar`
      * Whether to show or hide the complete toolbar. Default: `true`
-     */
-    showToolbar: {type: Boolean, default: true},
-
-    /**
+     * 
      * #### `showToolbarModes`
      * Whether to show the modes toolbar. Default: `true`
-     */
-    showToolbarModes: {type: Boolean, default: true},
-
-    /**
+     * 
      * #### `showToolbarModeList`
      * Whether to show the list of modes. Default: `true`
      */
+    showToolbar: {type: Boolean, default: true},
+    showToolbarModes: {type: Boolean, default: true},
     showToolbarModeList: {type: Boolean, default: false},
 
     /**
+     * 
      * #### `zoomFactorMax`
      * Maximum zoom factor. Default: `4`
+     * 
+     * #### `initialZoom`
+     * Initial zoom. Default: `1` (== 100%)
      */
     zoomFactorMax: {type: Number, default: 4},
+    initialZoom: {type: Number, default: 1},
 
     /**
+     * 
      * #### `initialSvg`
      * Initial SVG value
      */
     initialSvg: {type: String},
 
     /**
-     * #### `initialZoom`
-     * Initial zoom. Default: `1` (== 100%)
-     */
-    initialZoom: {type: Number, default: 1},
-
-    /**
+     * 
      * #### `initialImage`
      * Initial background image to load.
      */
     initialImage: {type: String, default: './assets/earth.jpg', required: true},
 
     /**
+     * 
      * #### `initialMode`
      * Initial mode. Default `HoverMult`
      */
@@ -202,6 +222,7 @@ export default {
     ]}},
 
     /**
+     * 
      * #### `xrxStyle`
      * Styles to use. Default: `[see source]`
      */
@@ -232,12 +253,37 @@ export default {
 
   },
 
+  /**
+   * 
+   * ### Events
+   * 
+   * #### `viewbox-changed`
+   * The viewbox (visible layer) has changed.
+   * 
+   * #### `shape-modified(shape)`
+   * An existing shape `shape` was changed.
+   * 
+   * #### `shape-created(shape)`
+   * A new shape `shape` was created.
+   * 
+   * #### `shape-selected(shape)`
+   * A shape `shape` has been selected by the user.
+   * 
+   * #### `mode-changed(from, to)`
+   * The mode changed, it was `from`, now it is `to`.
+   * 
+   * #### `svg-changed(svg)`
+   * The SVG changed to `svg`
+   * 
+   */
   mounted() {
     this.image = XrxUtils.createDrawing(this.$refs.canvas, this.width, this.height)
+    this.thumb = XrxUtils.createDrawing(this.$refs.thumb, this.thumbWidth, this.thumbHeight)
 
     this._setupEvents()
 
     this.backgroundImage = this.initialImage
+    this.thumbImage = this.backgroundImage
     this.loadImage()
     this.setMode(this.mode)
     if (this.initialSvg) {
@@ -246,33 +292,21 @@ export default {
     }
   },
 
+  computed: {
+    thumbStyle() {
+      return `
+        width: ${this.thumbWidth}px;
+        height: ${this.thumbHeight}px;
+        `.replace(/\n/g, '')
+    }
+  },
+
   /**
+   * 
    * ### Methods
    */
   methods: {
 
-    /**
-     * ### Events
-     * 
-     * #### `viewbox-changed`
-     * The viewbox (visible layer) has changed.
-     *
-     * #### `shape-modified(shape)`
-     * An existing shape `shape` was changed.
-     *
-     * #### `shape-created(shape)`
-     * A new shape `shape` was created.
-     *
-     * #### `shape-selected(shape)`
-     * A shape `shape` has been selected by the user.
-     *
-     * #### `mode-changed(from, to)`
-     * The mode changed, it was `from`, now it is `to`.
-     *
-     * #### `svg-changed(svg)`
-     * The SVG changed to `svg`
-     *
-     */
     _setupEvents() {
       this.image.eventViewboxChange = () => this.$emit('viewbox-changed')
       this.image.eventShapeModify = (shape) => this.$emit('shape-modified', shape)
@@ -295,9 +329,18 @@ export default {
       this.$on('mode-changed', (from, to) => {
         this.selectedShape = null
       })
+      this.$on('viewbox-changed', () => {
+        this.updateThumb()
+        this.thumbVisible = true;
+        if (this.thumbTimeout > 0) {
+          if (timeoutId) clearTimeout(timeoutId)
+          timeoutId = setTimeout(() => this.thumbVisible = false, this.thumbTimeout)
+        }
+      })
     },
 
     /**
+     * 
      * #### `loadImage(img)`
      * - `@param String img` URL of the image. Defaults to `this.backgroundImage`
      *   which defaults to [`initialImage`](#initialimage)
@@ -308,11 +351,15 @@ export default {
         this.image.getViewbox().fit(false)
         this.image.getViewbox().setZoomFactorMax(this.zoomFactorMax)
         this.zoomValue = this.image.getViewbox().getZoomValue()
+        this.thumb.setBackgroundImage(this.backgroundImage, () => {
+          this.thumb.getViewbox().fit()
+        })
         this.image.draw()
       })
     },
 
     /**
+     * 
      * #### `setMode(mode, ...args)`
      *
      * Sets the mode, passing further args to `setXXXMode`
@@ -325,10 +372,11 @@ export default {
     },
 
     /**
+     * 
      * #### `zoom(amount)`
-     *
+     * 
      * Change the zoom level of the viewbox.
-     *
+     * 
      * `amount` can be
      * - `in` to zoom in
      * - `out` to zoom out
@@ -349,8 +397,9 @@ export default {
     },
 
     /**
+     * 
      * #### `applyStyles()`
-     *
+     * 
      * Apply the defined style to all the shapes
      */
     applyStyles() {
@@ -360,8 +409,9 @@ export default {
     },
 
     /**
+     * 
      * #### `drawShape(shapeName)`
-     *
+     * 
      * `shapeName` can be one of:
      * - `Polygon`
      * - `Polyline`
@@ -374,12 +424,12 @@ export default {
       const shape = new xrx.shape[shapeName](this.image)
       XrxUtils.applyStyle(shape, this.xrxStyle)
       this.setMode('Create', shape.getCreatable())
-      // this.image.getLayerShape().addShapes(shape)
     },
 
     /**
+     * 
      * #### `removeSelected`
-     *
+     * 
      * Remove the currently selected shape
      */
     removeSelected() {
@@ -394,8 +444,9 @@ export default {
     },
 
     /**
+     * 
      * #### `copySelected()`
-     *
+     * 
      * Copy the currently selected shape
      */
     copySelected() {
@@ -405,8 +456,9 @@ export default {
     },
 
     /**
+     * 
      * #### `showImport()`
-     *
+     * 
      * Show the import modal
      */
     showImport() {
@@ -415,8 +467,9 @@ export default {
     },
 
     /**
+     * 
      * #### `showExport()`
-     *
+     * 
      * Show the export modal
      */
     showExport() {
@@ -424,8 +477,9 @@ export default {
     },
 
     /**
+     * 
      * #### `loadSvg()`
-     *
+     * 
      * Load the SVG
      */
     loadSvg() {
@@ -436,12 +490,18 @@ export default {
     },
 
     /**
+     * 
      * #### `showImageModal()`
-     *
+     * 
      * Show the modal that allows changing the image url
      */
     showImageModal() {
       $(this.$refs.imageModal).modal('show')
+    },
+
+
+    updateThumb() {
+        XrxUtils.navigationThumb(this.thumb, this.image)
     },
 
   }
@@ -469,6 +529,21 @@ export default {
         padding-left: 6px;
         padding-right: 6px;
       }
+    }
+  }
+  .thumb {
+    position: absolute;
+    z-index: 999;
+    top: 2px;
+    left: 2px;
+    border: 1px solid #404040;
+    background: rgba(255,255,255,0.8);
+    &.fade-out,
+    &.fade-out *,
+    {
+      transition: all 1000ms;
+      z-index: -1000;
+      opacity: 0;
     }
   }
 }
