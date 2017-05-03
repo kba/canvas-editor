@@ -2,7 +2,7 @@
 .panel.panel-default
   .panel-heading(v-if="showToolbar")
     .form-inline.xrx-toolbar
-      .input-group
+      .input-group(v-if="showToolbarModes")
         span.input-group-addon.hidden-sm.hidden-xs.hidden-md Mode
         button(title="Hover",@click="setMode('HoverMult')",v-bind:class="`btn btn-default ${!!mode.match(/^Hover/)?'active':''}`")
           img(src="./assets/hand.svg")
@@ -10,7 +10,11 @@
           img(src="./assets/hand-point.svg")
         button(@click="setMode('Select')",title="Select",v-bind:class="`btn btn-default ${mode === 'Select'?'active':''}`")
           img(src="./assets/cursor.svg")
-        select.form-control(@click="setMode($event.target.value)",v-if="showToolbarModeList")
+        select.form-control(
+          @click="setMode($event.target.value)",
+          v-if="showToolbarModesList",
+          style="width: inherit"
+          )
           option(
             v-for="value in modesEnabled",
             v-bind:value="value",
@@ -23,7 +27,7 @@
           img(src="./assets/copy.svg")
         button.btn.btn-default(title="Remove",@click="removeSelected",v-bind:disabled="!selectedShape")
           img(src="./assets/remove.svg")
-      .input-group.btn-group
+      .input-group.btn-group(v-if="showToolbarShapes")
         span.input-group-addon.hidden-xs.hidden-sm.hidden-md Shape
         button.btn.btn-default(title="Polygon",@click="drawShape('Polygon')")
           img(src="./assets/polygon.svg")
@@ -37,7 +41,7 @@
           img(src="./assets/polyline.svg")
         button.btn.btn-default(title="line",@click="drawShape('Line')")
           img(src="./assets/line.svg")
-      .input-group
+      .input-group(v-if="showToolbarFile")
         span.input-group-addon.hidden-xs.hidden-sm.hidden-md File
         button.btn.btn-default(title="Save SVG",@click="showExport")
           img(src="./assets/save.svg")
@@ -45,7 +49,7 @@
           img(src="./assets/upload.svg")
         button.btn.btn-default(title="Background Image",@click="showImageModal")
           img(src="./assets/image.svg")
-      .input-group.btn-group
+      .input-group.btn-group(v-if="showToolbarZoom")
         span.input-group-addon.hidden-xs.hidden-sm.hidden-md Zoom
         button.btn.btn-default(title="Zoom in",@click="zoom('in')")
           img(src="./assets/zoom-in.svg")
@@ -64,7 +68,7 @@
               a(href='#',@click="zoom('width')") Fit to width
             li
               a(href='#',@click="zoom('height')") Fit to height
-      .input-group.btn-group
+      .input-group.btn-group(v-if="showToolbarRotate")
         span.input-group-addon.hidden-sm.hidden-xs.hidden-md Rotate
         button.btn.btn-default(title="Rotate right",@click="rotate('right')")
           img(src="./assets/rotate-right.svg")
@@ -163,18 +167,37 @@ export default {
 
     /**
      * 
-     * #### `showToolbar`
+     * #### `show-toolbar`
      * Whether to show or hide the complete toolbar. Default: `true`
      * 
-     * #### `showToolbarModes`
+     * #### `show-toolbar-modes`
      * Whether to show the modes toolbar. Default: `true`
      * 
-     * #### `showToolbarModeList`
-     * Whether to show the list of modes. Default: `true`
+     * #### `show-toolbar-mode-list`
+     * Whether to show the list of modes. Default: `false`
+     * 
+     * #### `show-toolbar-modes`
+     * Whether to show the modes toolbar. Default: `true`
+     * 
+     * #### `show-toolbar-shapes`
+     * Whether to show the shapes toolbar. Default: `true`
+     * 
+     * #### `show-toolbar-file`
+     * Whether to show the file toolbar. Default: `true`
+     * 
+     * #### `show-toolbar-zoom`
+     * Whether to show the zoom toolbar. Default: `true`
+     * 
+     * #### `show-toolbar-rotate`
+     * Whether to show the rotate toolbar. Default: `true`
      */
-    showToolbar: {type: Boolean, default: true},
-    showToolbarModes: {type: Boolean, default: true},
-    showToolbarModeList: {type: Boolean, default: false},
+    showToolbar:          {type: Boolean, default: true},
+    showToolbarModes:     {type: Boolean, default: true},
+    showToolbarModesList: {type: Boolean, default: false},
+    showToolbarShapes:    {type: Boolean, default: true},
+    showToolbarFile:      {type: Boolean, default: true},
+    showToolbarZoom:      {type: Boolean, default: true},
+    showToolbarRotate:    {type: Boolean, default: true},
 
     /**
      * 
