@@ -3,7 +3,7 @@
   .panel-heading(v-if="showToolbar")
     .form-inline.xrx-toolbar
       .input-group
-        span.input-group-addon.hidden-sm.hidden-xs Mode
+        span.input-group-addon.hidden-sm.hidden-xs.hidden-md Mode
         button(title="Hover",@click="setMode('HoverMult')",v-bind:class="`btn btn-default ${!!mode.match(/^Hover/)?'active':''}`")
           img(src="./assets/hand.svg")
         button(@click="setMode('Modify')",title="Modify",v-bind:class="`btn btn-default ${mode === 'Modify'?'active':''}`")
@@ -18,13 +18,13 @@
             v-bind:selected="value == mode"
           ) {{ modesAvailable.find(x => x.value == value).text }}
       .input-group.btn-group(v-if="mode === 'Select'")
-        span.input-group-addon.hidden-xs.hidden-sm Action
+        span.input-group-addon.hidden-xs.hidden-sm.hidden-md Action
         button.btn.btn-default(title="Copy",@click="copySelected",v-bind:disabled="!selectedShape")
           img(src="./assets/copy.svg")
         button.btn.btn-default(title="Remove",@click="removeSelected",v-bind:disabled="!selectedShape")
           img(src="./assets/remove.svg")
       .input-group.btn-group
-        span.input-group-addon.hidden-sm.hidden-xs Shape
+        span.input-group-addon.hidden-xs.hidden-sm.hidden-md Shape
         button.btn.btn-default(title="Polygon",@click="drawShape('Polygon')")
           img(src="./assets/polygon.svg")
         button.btn.btn-default(title="Rectangle",@click="drawShape('Rect')")
@@ -38,7 +38,7 @@
         button.btn.btn-default(title="line",@click="drawShape('Line')")
           img(src="./assets/line.svg")
       .input-group
-        span.input-group-addon.hidden-sm.hidden-xs File
+        span.input-group-addon.hidden-xs.hidden-sm.hidden-md File
         button.btn.btn-default(title="Save SVG",@click="showExport")
           img(src="./assets/save.svg")
         button.btn.btn-default(title="Load SVG",@click="showImport")
@@ -46,7 +46,7 @@
         button.btn.btn-default(title="Background Image",@click="showImageModal")
           img(src="./assets/image.svg")
       .input-group.btn-group
-        span.input-group-addon.hidden-sm.hidden-xs Zoom
+        span.input-group-addon.hidden-xs.hidden-sm.hidden-md Zoom
         button.btn.btn-default(title="Zoom in",@click="zoom('in')")
           img(src="./assets/zoom-in.svg")
         button.btn.btn-default(title="Zoom out",@click="zoom('out')")
@@ -65,7 +65,7 @@
             li
               a(href='#',@click="zoom('height')") Fit to height
       .input-group.btn-group
-        span.input-group-addon.hidden-sm.hidden-xs Rotate
+        span.input-group-addon.hidden-sm.hidden-xs.hidden-md Rotate
         button.btn.btn-default(title="Rotate right",@click="rotate('right')")
           img(src="./assets/rotate-right.svg")
         button.btn.btn-default(title="Rotate left",@click="rotate('left')")
