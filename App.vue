@@ -443,6 +443,7 @@ export default {
 
       this.image.getViewbox().setZoomFactorMax(this.zoomFactorMax)
       this.imageBackground = this.initialImage
+      this.svgImport = this.initialSvg
       this.setMode(this.mode)
     },
 
