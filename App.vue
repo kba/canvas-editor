@@ -393,9 +393,9 @@ export default {
       this.$on('load-image', (img) => {
         img = img || this.imageBackground
         this.image.setBackgroundImage(img, () => {
-          this.loadSvg(this.svgExport)
           this.image.getViewbox().fit(true)
           this.image.draw()
+          this.loadSvg(this.svgExport)
         })
       })
       this.image.eventViewboxChange   = () => this.$emit('viewbox-changed')
@@ -599,7 +599,7 @@ export default {
     loadSvg(svg) {
       if (svg) this.svgImport = svg
       this.image.getLayerShape().removeShapes();
-      XrxUtils.drawFromSvg(this.svgImport, this.image, {relative: true})
+      XrxUtils.drawFromSvg(this.svgImport, this.image, {})
       this.applyStyles()
       $(this.$refs.importModal).modal('hide')
     },
