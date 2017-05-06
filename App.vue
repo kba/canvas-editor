@@ -602,10 +602,14 @@ export default {
      */
     loadSvg(svg) {
       if (svg) this.svgImport = svg
+      console.log('loadSvg', svg || this.svgImport)
       this.image.getLayerShape().removeShapes();
-      XrxUtils.drawFromSvg(this.svgImport, this.image, {relative: true})
+      XrxUtils.drawFromSvg(svg || this.svgImport, this.image, {
+        relative: true
+      })
       this.applyStyles()
       $(this.$refs.importModal).modal('hide')
+      console.log('svg-loaded')
       this.$emit('svg-loaded')
     },
 
@@ -632,6 +636,13 @@ export default {
       $(this.$refs.imageModal).modal('show')
     },
 
+    /**
+     * 
+     * #### `showThumb()`
+     * 
+     * Show the navigation thumbnail and hide it again after
+     * [`thumbTimeout`](#thumbtimeout)
+     */
     showThumb() {
       this.thumbVisible = true;
       clearTimeout(thumbHideTimeoutId)
