@@ -223,8 +223,12 @@ export default {
      * 
      * #### `initial-svg`
      * Initial SVG value
+     * 
+     * #### `grouped`
+     * Whether shapes loaded from SVG should be grouped. Default: `false`
      */
     initialSvg: {type: String},
+    grouped: {type: Boolean, default: false},
 
     /**
      * 
@@ -604,7 +608,8 @@ export default {
       if (svg) this.svgImport = svg
       // console.log('loadSvg', svg || this.svgImport)
       this.image.getLayerShape().removeShapes();
-      XrxUtils.drawFromSvg(this.svgImport, this.image, {})
+      console.log({grouped})
+      XrxUtils.drawFromSvg(this.svgImport, this.image, {grouped: this.grouped})
       this.applyStyles()
       $(this.$refs.importModal).modal('hide')
       // console.log('svg-loaded')
