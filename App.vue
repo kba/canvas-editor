@@ -364,7 +364,6 @@ export default {
       this.$on('rotate', (amount) => this.thumb.getViewbox()[`rotate${amount}`]())
       this.$on('load-image', (img, thumbBackground) => {
         thumbBackground = thumbBackground || this.thumbBackground || this.imageBackground
-        console.log({thumbBackground})
         this.thumb.setBackgroundImage(thumbBackground, () => {
           this.thumb.getViewbox().fit()
           this.thumb.draw()
@@ -398,6 +397,7 @@ export default {
           this.image.draw()
         })
       })
+
       this.image.eventViewboxChange   = () => this.$emit('viewbox-changed')
       this.image.eventShapeModify     = (shape) => this.$emit('shape-modified', shape)
       this.image.eventShapeActivated  = (shape) => this.$emit('shape-activated', shape)
@@ -406,8 +406,12 @@ export default {
       this.image.eventShapeUnselected = (shape) => this.$emit('shape-unselected', shape)
       this.image.eventShapeHoverIn    = (shape) => this.$emit('shape-hover-in', shape)
       this.image.eventShapeHoverOut   = (shape) => this.$emit('shape-hover-out', shape)
+
       this.$watch(() => this.svgExport, (svg) => this.$emit('svg-changed', svg))
       this.$watch(() => this.zoomValue, (...args) => this.$emit('zoom-changed', ...args))
+
+      this.$on('svg-loaded', () => this.exportSvg())
+
       this.$on('shape-activated', (shape) => {
         this.selectedShape = shape
       })
@@ -602,6 +606,7 @@ export default {
       XrxUtils.drawFromSvg(this.svgImport, this.image, {relative: true})
       this.applyStyles()
       $(this.$refs.importModal).modal('hide')
+      this.$emit('svg-loaded')
     },
 
     /**
