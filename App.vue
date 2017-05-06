@@ -94,7 +94,7 @@
         .modal-body
           textarea.form-control(v-model="svgImport", placeholder="SVG here")
           template
-            button.form-control.btn.btn-success(@click="loadSvg") Load
+            button.form-control.btn.btn-success(@click="loadSvg(this.svgImport)") Load
 
   // SVG Export Modal
   .export-modal.modal.fade(role='dialog', ref="exportModal", tabindex=-1)
