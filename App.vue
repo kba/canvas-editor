@@ -426,14 +426,14 @@ export default {
         this.selectedShape = null;
       })
       this.$on('shape-modified', (shape) => {
-        this.svgExport = XrxUtils.svgFromDrawing(this.image)
+        this.exportSvg()
       })
       this.$on('shape-created', (shape) => {
         this.applyStyles()
         this.setMode('Modify')
         this.image.getLayerShapeModify().activate(shape.getModifiable())
         shape.getModifiable().selectOn()
-        this.svgExport = XrxUtils.svgFromDrawing(this.image)
+        this.exportSvg()
         document.activeElement.blur()
       })
       this.$on('mode-changed', (from, to) => {
@@ -607,6 +607,19 @@ export default {
       this.applyStyles()
       $(this.$refs.importModal).modal('hide')
       this.$emit('svg-loaded')
+    },
+
+    /**
+     * 
+     * #### `exportSvg()`
+     * 
+     * Export the SVG
+     */
+    exportSvg() {
+      console.log('svgExport')
+      this.svgExport = XrxUtils.svgFromDrawing(this.image, {
+        skipHeight: true
+      })
     },
 
     /**
