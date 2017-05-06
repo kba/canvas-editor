@@ -155,16 +155,16 @@ export default {
      * #### `enable-thumb`
      * Whether the thumb navigation is enabled. Defaut: `true`
      * 
-     * #### `thumbWidth`
+     * #### `thumb-width`
      * Width of the nav thumb (**not** the thumbnail image). Default: `120`
      * 
-     * #### `thumbBackground`
+     * #### `thumb-background`
      * Fixed thumbnail image. Default: `''` (none, use current canvas image)
      * 
-     * #### `thumbHeight`
+     * #### `thumb-height`
      * Height of the nav thumb (**not** the thumbnail image). Default: `120`
      * 
-     * #### `thumbTimeout`
+     * #### `thumb-timeout`
      * Time in ms after which to hide the thumb. Default: `1000`
      */
 
@@ -210,10 +210,10 @@ export default {
 
     /**
      * 
-     * #### `zoomFactorMax`
+     * #### `zoom-factor-max`
      * Maximum zoom factor. Default: `4`
      * 
-     * #### `initialZoom`
+     * #### `initial-zoom`
      * Initial zoom. Default: `1` (== 100%)
      */
     zoomFactorMax: {type: Number, default: 4},
@@ -221,21 +221,21 @@ export default {
 
     /**
      * 
-     * #### `initialSvg`
+     * #### `initial-svg`
      * Initial SVG value
      */
     initialSvg: {type: String},
 
     /**
      * 
-     * #### `initialImage`
+     * #### `initial-image`
      * Initial background image to load.
      */
     initialImage: {type: String, default: './assets/earth.jpg', required: true},
 
     /**
      * 
-     * #### `initialMode`
+     * #### `initia-mode`
      * Initial mode. Default `HoverMult`
      */
     initialMode: {type: String, default: 'HoverMult'},
@@ -257,10 +257,10 @@ export default {
 
     /**
      * 
-     * #### `xrxStyle`
+     * #### `xrx-style`
      * Styles to use for shapes in image. Default: `[see source]`
      * 
-     * #### `thumbXrxStyle`
+     * #### `thumb-xrx-style`
      * Styles to use for thumb shapes. Default: `{}`
      */
     thumbXrxStyle: {type: Object, default: () => {}},

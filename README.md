@@ -11,10 +11,10 @@
 		* [`width`](#width)
 		* [`height`](#height)
 		* [`enable-thumb`](#enable-thumb)
-		* [`thumbWidth`](#thumbwidth)
-		* [`thumbBackground`](#thumbbackground)
-		* [`thumbHeight`](#thumbheight)
-		* [`thumbTimeout`](#thumbtimeout)
+		* [`thumb-width`](#thumb-width)
+		* [`thumb-background`](#thumb-background)
+		* [`thumb-height`](#thumb-height)
+		* [`thumb-timeout`](#thumb-timeout)
 		* [`show-toolbar`](#show-toolbar)
 		* [`show-toolbar-modes`](#show-toolbar-modes)
 		* [`show-toolbar-mode-list`](#show-toolbar-mode-list)
@@ -23,13 +23,13 @@
 		* [`show-toolbar-file`](#show-toolbar-file)
 		* [`show-toolbar-zoom`](#show-toolbar-zoom)
 		* [`show-toolbar-rotate`](#show-toolbar-rotate)
-		* [`zoomFactorMax`](#zoomfactormax)
-		* [`initialZoom`](#initialzoom)
-		* [`initialSvg`](#initialsvg)
-		* [`initialImage`](#initialimage)
-		* [`initialMode`](#initialmode)
-		* [`xrxStyle`](#xrxstyle)
-		* [`thumbXrxStyle`](#thumbxrxstyle)
+		* [`zoom-factor-max`](#zoom-factor-max)
+		* [`initial-zoom`](#initial-zoom)
+		* [`initial-svg`](#initial-svg)
+		* [`initial-image`](#initial-image)
+		* [`initia-mode`](#initia-mode)
+		* [`xrx-style`](#xrx-style)
+		* [`thumb-xrx-style`](#thumb-xrx-style)
 	* [Events](#events)
 		* [`viewbox-changed`](#viewbox-changed)
 		* [`shape-modified(shape)`](#shape-modifiedshape)
@@ -81,16 +81,16 @@ Height of the canvas (**not** the image). Default: `400`
 #### `enable-thumb`
 Whether the thumb navigation is enabled. Defaut: `true`
 
-#### `thumbWidth`
+#### `thumb-width`
 Width of the nav thumb (**not** the thumbnail image). Default: `120`
 
-#### `thumbBackground`
+#### `thumb-background`
 Fixed thumbnail image. Default: `''` (none, use current canvas image)
 
-#### `thumbHeight`
+#### `thumb-height`
 Height of the nav thumb (**not** the thumbnail image). Default: `120`
 
-#### `thumbTimeout`
+#### `thumb-timeout`
 Time in ms after which to hide the thumb. Default: `1000`
 
 #### `show-toolbar`
@@ -117,25 +117,25 @@ Whether to show the zoom toolbar. Default: `true`
 #### `show-toolbar-rotate`
 Whether to show the rotate toolbar. Default: `true`
 
-#### `zoomFactorMax`
+#### `zoom-factor-max`
 Maximum zoom factor. Default: `4`
 
-#### `initialZoom`
+#### `initial-zoom`
 Initial zoom. Default: `1` (== 100%)
 
-#### `initialSvg`
+#### `initial-svg`
 Initial SVG value
 
-#### `initialImage`
+#### `initial-image`
 Initial background image to load.
 
-#### `initialMode`
+#### `initia-mode`
 Initial mode. Default `HoverMult`
 
-#### `xrxStyle`
+#### `xrx-style`
 Styles to use for shapes in image. Default: `[see source]`
 
-#### `thumbXrxStyle`
+#### `thumb-xrx-style`
 Styles to use for thumb shapes. Default: `{}`
 
 ### Events
