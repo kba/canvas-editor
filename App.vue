@@ -346,10 +346,10 @@ export default {
     imageDiv() { return this.$refs.image },
     thumbDiv() { return this.$refs.thumb },
     thumbStyle() {
-      return `
-        width: ${this.thumbWidth}px;
-        height: ${this.thumbHeight}px;
-        `.replace(/\n/g, '')
+      return [
+        `width: ${this.thumbWidth}px`,
+        `height: ${this.thumbHeight}px`,
+        ].join(';')
     }
   },
 
