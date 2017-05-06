@@ -53,7 +53,9 @@
 		* [`showImport()`](#showimport)
 		* [`showExport()`](#showexport)
 		* [`loadSvg(svg)`](#loadsvgsvg)
+		* [`exportSvg()`](#exportsvg)
 		* [`showImageModal()`](#showimagemodal)
+		* [`showThumb()`](#showthumb)
 
 <!-- END-MARKDOWN-TOC -->
 
@@ -228,8 +230,17 @@ Show the export modal
 
 Load the SVG
 
+#### `exportSvg()`
+
+Export the SVG
+
 #### `showImageModal()`
 
 Show the modal that allows changing the image url
+
+#### `showThumb()`
+
+Show the navigation thumbnail and hide it again after
+[`thumbTimeout`](#thumbtimeout)
 
 <!-- END-RENDER -->
