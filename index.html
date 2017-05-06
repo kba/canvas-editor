@@ -1,15 +1,51 @@
 <html>
   <head>
-    <script src="https://unpkg.com/semtonotes-client@0.2.0"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.3.1/vue.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
+    <script src="https://unpkg.com/semtonotes-client@0.2.3"></script>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
   </head>
   <body>
     <div id="app"></div>
 
-    <script src="dist/xrxeditor.js"></script>
+    <script src="dist/xrx-vue.js"></script>
+    <script>
+      Vue.use(XrxVue.default)
+
+      new Vue({
+        el: '#app',
+        data: {
+          thumbXrxStyle:{
+            strokeColor: 'green',
+            fillOpacity: 0.55,
+          }
+        },
+        template: `<xrx-vue
+        ref="zoneEditor"
+        :thumb-xrx-style="thumbXrxStyle"
+    thumb-background='https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Ghostscript_Tiger.svg/100px-Ghostscript_Tiger.svg.png'
+    initial-image='https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Ghostscript_Tiger.svg/1024px-Ghostscript_Tiger.svg.png'
+    @zoom-changed="onZoomChange"
+    />`,
+        methods: {
+          onZoomChange(now, before) {
+          },
+          // onZoomChange(now, before) {
+          //     const size =
+          //           (before >= 0.5 && now < 0.5) ? 200
+          //         : (before >= 1 && now < 1) ? 500
+          //         : (before < 1 && now > 1) ? 1000
+          //         : (before < 2 && now > 2) ? 2000
+          //         : -1
+          //     console.log({before, now, size})
+          //     if (size > 0)
+          //         this.$refs.zoneEditor.loadImage(`https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Ghostscript_Tiger.svg/${size}px-Ghostscript_Tiger.svg.png`)
+          // }
+        },
+      })
+    </script>
+
   </body>
 </html>

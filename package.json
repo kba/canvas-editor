@@ -1,9 +1,12 @@
 {
-  "name": "canvas-editor",
-  "version": "1.0.0",
-  "description": "A Vue.js project",
+  "name": "@kba/xrx-vue",
+  "version": "0.0.17",
+  "description": "Draw shapes on canvases with semtonotes in Vue",
   "author": "kba",
-  "private": true,
+  "main": "./dist/xrx-vue.js",
+  "scripts": {
+    "prepublish": "webpack -p"
+  },
   "peerDependencies": {
     "semtonotes-client": "^0.1.2",
     "vue": "^2.2.2"
@@ -12,7 +15,6 @@
     "semtonotes-utils": "^0.1.6"
   },
   "devDependencies": {
-    "autoprefixer": "^6.7.2",
     "babel-core": "^6.24.1",
     "babel-eslint": "^7.1.1",
     "babel-loader": "^6.4.1",
