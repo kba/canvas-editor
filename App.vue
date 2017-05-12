@@ -235,7 +235,7 @@ export default {
      * #### `initial-image`
      * Initial background image to load.
      */
-    initialImage: {type: String, default: './assets/earth.jpg', required: true},
+    initialImage: {type: String, default: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Ghostscript_Tiger.svg/1024px-Ghostscript_Tiger.svg.png', required: true},
 
     /**
      * 
