@@ -245,6 +245,7 @@ export default {
     initialMode: {type: String, default: 'HoverMult'},
 
     modesEnabled: {type: Array, default(){return[
+      'Disabled',
       'Hover',
       'HoverMult',
       'Modify',
