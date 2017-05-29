@@ -3,6 +3,7 @@
 > Draw shapes on a canvas using SemToNotes
 
 [**DEMO**](https://kba.github.io/canvas-editor)
+![](./screenshot-2017-05-29.png)
 
 <!-- BEGIN-MARKDOWN-TOC -->
 * [Build Setup](#build-setup)
