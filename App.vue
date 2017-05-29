@@ -1,5 +1,5 @@
 <template lang="pug">
-.panel.panel-default
+div.xrx-vue
   .panel-heading(v-if="showToolbar")
     .form-inline.xrx-toolbar
       .input-group(v-if="showToolbarModes")
@@ -661,7 +661,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.panel {
+.xrx-vue {
   background: transparent;
   .panel-heading {
     padding: 0;
