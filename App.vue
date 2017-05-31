@@ -185,9 +185,6 @@ export default {
      * #### `show-toolbar-mode-list`
      * Whether to show the list of modes. Default: `false`
      * 
-     * #### `show-toolbar-modes`
-     * Whether to show the modes toolbar. Default: `true`
-     * 
      * #### `show-toolbar-shapes`
      * Whether to show the shapes toolbar. Default: `true`
      * 
