@@ -1,5 +1,5 @@
 <template>
-<div class="panel panel-default">
+<div class="xrx-vue">
   <div v-if="showToolbar" class="panel-heading">
     <div class="form-inline xrx-toolbar">
       <div v-if="showToolbarModes" class="input-group"><span class="input-group-addon hidden-sm hidden-xs hidden-md">Mode</span>
@@ -160,9 +160,6 @@ export default {
      * #### `show-toolbar-mode-list`
      * Whether to show the list of modes. Default: `false`
      * 
-     * #### `show-toolbar-modes`
-     * Whether to show the modes toolbar. Default: `true`
-     * 
      * #### `show-toolbar-shapes`
      * Whether to show the shapes toolbar. Default: `true`
      * 
@@ -210,7 +207,7 @@ export default {
      * #### `initial-image`
      * Initial background image to load.
      */
-    initialImage: {type: String, default: './assets/earth.jpg', required: true},
+    initialImage: {type: String, default: require('./assets/1024px-Ghostscript_Tiger.svg.png'), required: true},
 
     /**
      * 
@@ -220,6 +217,7 @@ export default {
     initialMode: {type: String, default: 'HoverMult'},
 
     modesEnabled: {type: Array, default(){return[
+      'Disabled',
       'Hover',
       'HoverMult',
       'Modify',
@@ -635,7 +633,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.panel {
+.xrx-vue {
   background: transparent;
   .panel-heading {
     padding: 0;

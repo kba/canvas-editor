@@ -23,11 +23,12 @@
           }
         },
         template: `<xrx-vue
-        ref="zoneEditor"
-        :thumb-xrx-style="thumbXrxStyle"
-    thumb-background='https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Ghostscript_Tiger.svg/100px-Ghostscript_Tiger.svg.png'
-    initial-image='https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Ghostscript_Tiger.svg/1024px-Ghostscript_Tiger.svg.png'
-    @zoom-changed="onZoomChange"
+      ref="zoneEditor"
+      class="panel panel-default"
+      :thumb-xrx-style="thumbXrxStyle"
+      thumb-background='assets/1024px-Ghostscript_Tiger.svg.png'
+      initial-image='assets/1024px-Ghostscript_Tiger.svg.png'
+      @zoom-changed="onZoomChange"
     />`,
         methods: {
           onZoomChange(now, before) {
