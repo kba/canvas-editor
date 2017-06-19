@@ -1,117 +1,92 @@
-<template lang="pug">
-.panel.panel-default
-  .panel-heading(v-if="showToolbar")
-    .form-inline.xrx-toolbar
-      .input-group(v-if="showToolbarModes")
-        span.input-group-addon.hidden-sm.hidden-xs.hidden-md Mode
-        button(title="Hover",@click="setMode('HoverMult')",v-bind:class="`btn btn-default ${!!mode.match(/^Hover/)?'active':''}`")
-          img(src="./assets/hand.svg")
-        button(@click="setMode('Modify')",title="Modify",v-bind:class="`btn btn-default ${mode === 'Modify'?'active':''}`")
-          img(src="./assets/hand-point.svg")
-        button(@click="setMode('Select')",title="Select",v-bind:class="`btn btn-default ${mode === 'Select'?'active':''}`")
-          img(src="./assets/cursor.svg")
-        select.form-control(
-          @click="setMode($event.target.value)",
-          v-if="showToolbarModesList",
-          style="width: inherit"
-          )
-          option(
-            v-for="value in modesEnabled",
-            v-bind:value="value",
-            v-bind:disabled="modesAvailable.find(x => x.value == value).disabled"
-            v-bind:selected="value == mode"
-          ) {{ modesAvailable.find(x => x.value == value).text }}
-      .input-group.btn-group(v-if="selectedShape")
-        span.input-group-addon.hidden-xs.hidden-sm.hidden-md Action
-        button.btn.btn-default(title="Copy",@click="copySelected")
-          img(src="./assets/copy.svg")
-        button.btn.btn-default(title="Remove",@click="removeSelected")
-          img(src="./assets/remove.svg")
-      .input-group.btn-group(v-if="showToolbarShapes")
-        span.input-group-addon.hidden-xs.hidden-sm.hidden-md Shape
-        button.btn.btn-default(title="Polygon",@click="drawShape('Polygon')")
-          img(src="./assets/polygon.svg")
-        button.btn.btn-default(title="Rectangle",@click="drawShape('Rect')")
-          img(src="./assets/rectangle.svg")
-        button.btn.btn-default(title="Ellipse",@click="drawShape('Ellipse')")
-          img(src="./assets/ellipsis.svg")
-        button.btn.btn-default(title="Circle",@click="drawShape('Circle')")
-          img(src="./assets/circle.svg")
-        button.btn.btn-default(title="Polyline",@click="drawShape('Polyline')")
-          img(src="./assets/polyline.svg")
-        button.btn.btn-default(title="line",@click="drawShape('Line')")
-          img(src="./assets/line.svg")
-      .input-group(v-if="showToolbarFile")
-        span.input-group-addon.hidden-xs.hidden-sm.hidden-md File
-        button.btn.btn-default(title="Save SVG",@click="showExport")
-          img(src="./assets/save.svg")
-        button.btn.btn-default(title="Load SVG",@click="showImport")
-          img(src="./assets/upload.svg")
-        button.btn.btn-default(title="Background Image",@click="showImageModal")
-          img(src="./assets/image.svg")
-      .input-group.btn-group(v-if="showToolbarZoom")
-        span.input-group-addon.hidden-xs.hidden-sm.hidden-md Zoom
-        button.btn.btn-default(title="Zoom in",@click="zoom('in')")
-          img(src="./assets/zoom-in.svg")
-        button.btn.btn-default(title="Zoom out",@click="zoom('out')")
-          img(src="./assets/zoom-out.svg")
-        span.dropdown
-          button.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown')
-            | {{ parseInt(zoomValue * 100) }} %
-            span.caret
-          ul.dropdown-menu
-            li
-              a(href='#',@click="zoom(1)") 100 %
-            li
-              a(href='#',@click="zoom('fit')") Fit to canvas
-            li
-              a(href='#',@click="zoom('width')") Fit to width
-            li
-              a(href='#',@click="zoom('height')") Fit to height
-      .input-group.btn-group(v-if="showToolbarRotate")
-        span.input-group-addon.hidden-sm.hidden-xs.hidden-md Rotate
-        button.btn.btn-default(title="Rotate right",@click="rotate('Left')")
-          img(src="./assets/rotate-right.svg")
-        button.btn.btn-default(title="Rotate left",@click="rotate('Right')")
-          img(src="./assets/rotate-left.svg")
-
-  // Canvas
-  div(style="position: relative")
-    div(
-      ref="image"
-      v-bind:style="`width: ${width}; height: ${height}`")
-    div(
-      v-if="enableThumb"
-      ref="thumb"
-      v-bind:class="{thumb, 'fade-out':!thumbVisible}"
-      v-bind:style="thumbStyle")
-
-  // SVG Import Modal
-  .import-modal.modal.fade(role='dialog', ref="importModal", tabindex=-1)
-    .modal-dialog
-      .modal-content
-        .modal-header Import from SVG
-        .modal-body
-          textarea.form-control(v-model="svgImport", placeholder="SVG here")
-          template
-            button.form-control.btn.btn-success(@click="loadSvg(this.svgImport)") Load
-
-  // SVG Export Modal
-  .export-modal.modal.fade(role='dialog', ref="exportModal", tabindex=-1)
-    .modal-dialog
-      .modal-content
-        .modal-header Export as SVG
-        .modal-body
-          textarea.form-control(v-model="svgExport", placeholder="SVG here", readonly)
-
-  // Background image modal
-  .image-modal.modal.fade(role='dialog', ref="imageModal", tabindex=-1)
-    .modal-dialog
-      .modal-content
-        .modal-header Set background image
-        .modal-body
-          input.form-control(format='url', v-model="imageBackground", placeholder="Image URL")
-          button.form-control.btn.btn-success(@click="loadImage(this.imageBackground)") Set background image
+<template>
+<div class="panel panel-default">
+  <div v-if="showToolbar" class="panel-heading">
+    <div class="form-inline xrx-toolbar">
+      <div v-if="showToolbarModes" class="input-group"><span class="input-group-addon hidden-sm hidden-xs hidden-md">Mode</span>
+        <button title="Hover" @click="setMode('HoverMult')" v-bind:class="`btn btn-default ${!!mode.match(/^Hover/)?'active':''}`"><img src="./assets/hand.svg"/></button>
+        <button @click="setMode('Modify')" title="Modify" v-bind:class="`btn btn-default ${mode === 'Modify'?'active':''}`"><img src="./assets/hand-point.svg"/></button>
+        <button @click="setMode('Select')" title="Select" v-bind:class="`btn btn-default ${mode === 'Select'?'active':''}`"><img src="./assets/cursor.svg"/></button>
+        <select @click="setMode($event.target.value)" v-if="showToolbarModesList" style="width: inherit" class="form-control">
+          <option v-for="value in modesEnabled" v-bind:value="value" v-bind:disabled="modesAvailable.find(x =&gt; x.value == value).disabled" v-bind:selected="value == mode">{{ modesAvailable.find(x => x.value == value).text }}</option>
+        </select>
+      </div>
+      <div v-if="selectedShape" class="input-group btn-group"><span class="input-group-addon hidden-xs hidden-sm hidden-md">Action</span>
+        <button title="Copy" @click="copySelected" class="btn btn-default"><img src="./assets/copy.svg"/></button>
+        <button title="Remove" @click="removeSelected" class="btn btn-default"><img src="./assets/remove.svg"/></button>
+      </div>
+      <div v-if="showToolbarShapes" class="input-group btn-group"><span class="input-group-addon hidden-xs hidden-sm hidden-md">Shape</span>
+        <button title="Polygon" @click="drawShape('Polygon')" class="btn btn-default"><img src="./assets/polygon.svg"/></button>
+        <button title="Rectangle" @click="drawShape('Rect')" class="btn btn-default"><img src="./assets/rectangle.svg"/></button>
+        <button title="Ellipse" @click="drawShape('Ellipse')" class="btn btn-default"><img src="./assets/ellipsis.svg"/></button>
+        <button title="Circle" @click="drawShape('Circle')" class="btn btn-default"><img src="./assets/circle.svg"/></button>
+        <button title="Polyline" @click="drawShape('Polyline')" class="btn btn-default"><img src="./assets/polyline.svg"/></button>
+        <button title="line" @click="drawShape('Line')" class="btn btn-default"><img src="./assets/line.svg"/></button>
+      </div>
+      <div v-if="showToolbarFile" class="input-group"><span class="input-group-addon hidden-xs hidden-sm hidden-md">File</span>
+        <button title="Save SVG" @click="showExport" class="btn btn-default"><img src="./assets/save.svg"/></button>
+        <button title="Load SVG" @click="showImport" class="btn btn-default"><img src="./assets/upload.svg"/></button>
+        <button title="Background Image" @click="showImageModal" class="btn btn-default"><img src="./assets/image.svg"/></button>
+      </div>
+      <div v-if="showToolbarZoom" class="input-group btn-group"><span class="input-group-addon hidden-xs hidden-sm hidden-md">Zoom</span>
+        <button title="Zoom in" @click="zoom('in')" class="btn btn-default"><img src="./assets/zoom-in.svg"/></button>
+        <button title="Zoom out" @click="zoom('out')" class="btn btn-default"><img src="./assets/zoom-out.svg"/></button><span class="dropdown">
+          <button type="button" data-toggle="dropdown" class="btn btn-default dropdown-toggle">{{ parseInt(zoomValue * 100) }} %<span class="caret"></span></button>
+          <ul class="dropdown-menu">
+            <li><a href="#" @click="zoom(1)">100 %</a></li>
+            <li><a href="#" @click="zoom('fit')">Fit to canvas</a></li>
+            <li><a href="#" @click="zoom('width')">Fit to width</a></li>
+            <li><a href="#" @click="zoom('height')">Fit to height</a></li>
+          </ul></span>
+      </div>
+      <div v-if="showToolbarRotate" class="input-group btn-group"><span class="input-group-addon hidden-sm hidden-xs hidden-md">Rotate</span>
+        <button title="Rotate right" @click="rotate('Left')" class="btn btn-default"><img src="./assets/rotate-right.svg"/></button>
+        <button title="Rotate left" @click="rotate('Right')" class="btn btn-default"><img src="./assets/rotate-left.svg"/></button>
+      </div>
+    </div>
+  </div>
+  <!-- Canvas-->
+  <div style="position: relative">
+    <div ref="image" v-bind:style="`width: ${width}; height: ${height}`"></div>
+    <div v-if="enableThumb" ref="thumb" v-bind:class="{thumb, 'fade-out':!thumbVisible}" v-bind:style="thumbStyle"></div>
+  </div>
+  <!-- SVG Import Modal-->
+  <div role="dialog" ref="importModal" tabindex="-1" class="import-modal modal fade">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">Import from SVG</div>
+        <div class="modal-body">
+          <textarea v-model="svgImport" placeholder="SVG here" class="form-control"></textarea>
+          <template>
+            <button @click="loadSvg(this.svgImport)" class="form-control btn btn-success">Load</button>
+          </template>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- SVG Export Modal-->
+  <div role="dialog" ref="exportModal" tabindex="-1" class="export-modal modal fade">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">Export as SVG</div>
+        <div class="modal-body">
+          <textarea v-model="svgExport" placeholder="SVG here" readonly="readonly" class="form-control"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Background image modal-->
+  <div role="dialog" ref="imageModal" tabindex="-1" class="image-modal modal fade">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">Set background image</div>
+        <div class="modal-body">
+          <input format="url" v-model="imageBackground" placeholder="Image URL" class="form-control"/>
+          <button @click="loadImage(this.imageBackground)" class="form-control btn btn-success">Set background image</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 </template>
 
 <script>

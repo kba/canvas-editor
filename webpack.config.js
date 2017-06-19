@@ -11,7 +11,7 @@ module.exports = {
     externals: {
         jquery: "$",
         bootstrap: 'bootstrap',
-        vue: 'Vue',
+        'vue/dist/vue.esm.js': 'Vue',
         'semtonotes-client': 'xrx',
     },
     module: {
@@ -28,7 +28,6 @@ module.exports = {
                     loaders: {
                         scss: 'vue-style-loader!css-loader!sass-loader',
                         sass: 'vue-style-loader!css-loader!sass-loader?indentedSyntax',
-                        html: 'vue-html-loader?attrs=img:src',
                     }
                 },
             },
