@@ -282,11 +282,14 @@ export default {
    * #### `viewbox-changed`
    * The viewbox (visible layer) has changed.
    * 
+   * #### `shape-created(shape)`
+   * A new shape `shape` was created.
+   * 
    * #### `shape-modified(shape)`
    * An existing shape `shape` was changed.
    * 
-   * #### `shape-created(shape)`
-   * A new shape `shape` was created.
+   * #### `shape-deleted(shape)`
+   * A shape `shape` has been deleted by the user.
    * 
    * #### `shape-selected(shape)`
    * A shape `shape` has been selected by the user.
@@ -376,9 +379,9 @@ export default {
       })
 
       this.image.eventViewboxChange   = () => this.$emit('viewbox-changed')
+      this.image.eventShapeCreated    = (shape) => this.$emit('shape-created', shape)
       this.image.eventShapeModify     = (shape) => this.$emit('shape-modified', shape)
       this.image.eventShapeActivated  = (shape) => this.$emit('shape-activated', shape)
-      this.image.eventShapeCreated    = (shape) => this.$emit('shape-created', shape)
       this.image.eventShapeSelected   = (shape) => this.$emit('shape-selected', shape)
       this.image.eventShapeUnselected = (shape) => this.$emit('shape-unselected', shape)
       this.image.eventShapeHoverIn    = (shape) => this.$emit('shape-hover-in', shape)
@@ -403,6 +406,9 @@ export default {
         this.selectedShape = null;
       })
       this.$on('shape-modified', (shape) => {
+        this.exportSvg()
+      })
+      this.$on('shape-deleted', (shape) => {
         this.exportSvg()
       })
       this.$on('shape-created', (shape) => {
@@ -528,9 +534,11 @@ export default {
      */
     removeSelected() {
       if (window.confirm("Delete selected shape?")) {
-        this.image.removeShape(this.selectedShape)
+        const shape = this.selectedShape
+        this.image.removeShape(shape)
         this.setMode(this.initialMode)
         this.$emit('shape-unselected')
+        this.$emit('shape-deleted', shape)
       }
       document.activeElement.blur()
     },
@@ -599,7 +607,6 @@ export default {
      * Export the SVG
      */
     exportSvg() {
-      console.log('svgExport')
       this.svgExport = XrxUtils.svgFromDrawing(this.image, {
         skipHeight: true
       })
