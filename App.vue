@@ -387,9 +387,10 @@ export default {
         this.image.setBackgroundImage(img, () => {
           this.image.getViewbox().fit(true)
           this.image.draw()
-          if (this.svgImport) {
+          const {svgImport} = this
+          if (svgImport) {
             this.reset()
-            this.loadSvg(this.svgImport)
+            this.loadSvg(svgImport)
           }
         })
       })
@@ -609,6 +610,7 @@ export default {
       }
       this.image.getLayerShapeModify().removeShapes();
       this.image.getLayerShape().removeShapes();
+      this.svgImport = ''
       this.$emit('reset')
     },
 
