@@ -591,6 +591,7 @@ export default {
         console.error("Image not yet loaded? Width is zero...")
         return
       }
+      this.image.getLayerShapeModify().removeShapes();
       this.image.getLayerShape().removeShapes();
       console.log("loadSvg", {grouped: this.grouped, svgImport: this.svgImport})
       XrxUtils.drawFromSvg(this.svgImport, this.image, {grouped: this.grouped})
