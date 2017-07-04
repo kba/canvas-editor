@@ -314,12 +314,25 @@ export default {
    * 
    */
   mounted() {
+
     this._initCanvas()
 
     if (this.enableThumb)
       this._initThumb()
 
-    this.loadImage()
+    this.imageBackground = this.initialImage
+
+    if (this.imageBackground) {
+      this.image.setBackgroundImage(this.imageBackground, () => {
+        if (this.initialSvg) {
+          this.reset()
+          this.image.getViewbox().fit(true)
+          this.image.draw()
+          this.loadSvg(this.initialSvg)
+        }
+      })
+    }
+
   },
 
   computed: {
@@ -374,7 +387,10 @@ export default {
         this.image.setBackgroundImage(img, () => {
           this.image.getViewbox().fit(true)
           this.image.draw()
-          this.loadSvg(this.svgExport)
+          if (this.svgImport) {
+            this.reset()
+            this.loadSvg(this.svgImport)
+          }
         })
       })
 
@@ -431,7 +447,6 @@ export default {
       })
 
       this.image.getViewbox().setZoomFactorMax(this.zoomFactorMax)
-      this.imageBackground = this.initialImage
       this.svgImport = this.initialSvg
       this.setMode(this.mode)
     },
@@ -581,18 +596,34 @@ export default {
 
     /**
      * 
-     * #### `loadSvg(svg)`
+     * #### `reset()`
      * 
-     * Load the SVG
+     * Reset the canvas and svg
+     * 
      */
-    loadSvg(svg) {
-      if (svg) this.svgImport = svg
+    reset() {
+      console.log("resetcanvas")
       if(!this.image.getLayerBackground().getImage().getWidth()) {
         console.error("Image not yet loaded? Width is zero...")
         return
       }
       this.image.getLayerShapeModify().removeShapes();
       this.image.getLayerShape().removeShapes();
+      this.$emit('reset')
+    },
+
+    /**
+     * 
+     * #### `loadSvg(svg)`
+     * 
+     * Load the SVG
+     */
+    loadSvg(svg) {
+      if (! svg || svg === '<svg></svg>') {
+        console.error("Refusing to draw empty SVG. Use 'reset()' to reset.")
+        return
+      }
+      this.svgImport = svg
       console.log("loadSvg", {grouped: this.grouped, svgImport: this.svgImport})
       XrxUtils.drawFromSvg(this.svgImport, this.image, {grouped: this.grouped})
       this.applyStyles()
