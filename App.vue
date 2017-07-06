@@ -603,7 +603,6 @@ export default {
      * 
      */
     reset() {
-      console.log("resetcanvas")
       if(!this.image.getLayerBackground().getImage().getWidth()) {
         console.error("Image not yet loaded? Width is zero...")
         return
@@ -626,7 +625,7 @@ export default {
         return
       }
       this.svgImport = svg
-      console.log("loadSvg", {grouped: this.grouped, svgImport: this.svgImport})
+      // console.log("loadSvg", {grouped: this.grouped, svgImport: this.svgImport})
       XrxUtils.drawFromSvg(this.svgImport, this.image, {grouped: this.grouped})
       this.applyStyles()
       $(this.$refs.importModal).modal('hide')
