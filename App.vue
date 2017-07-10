@@ -315,10 +315,15 @@ export default {
    */
   mounted() {
 
-    this._initCanvas()
+    // ['load-image'].forEach((ev, ...args) => {
+    //   console.info('EVENT', ev, args)
+    // })
 
-    if (this.enableThumb)
+    if (this.enableThumb) {
       this._initThumb()
+    }
+
+    this._initCanvas()
 
     this.imageBackground = this.initialImage
 
@@ -326,9 +331,16 @@ export default {
       this.image.setBackgroundImage(this.imageBackground, () => {
         if (this.initialSvg) {
           this.reset()
-          this.image.getViewbox().fit(true)
-          this.image.draw()
           this.loadSvg(this.initialSvg)
+        }
+        this.image.getViewbox().fit(true)
+        this.image.draw()
+        if (this.enableThumb) {
+          const thumbBackground = this.thumbBackground || this.imageBackground
+          this.thumb.setBackgroundImage(thumbBackground, () => {
+            this.thumb.getViewbox().fit()
+            this.thumb.draw()
+          })
         }
       })
     }
@@ -354,6 +366,7 @@ export default {
 
     _initThumb() {
       this.thumb = XrxUtils.createDrawing(this.thumbDiv, this.thumbWidth, this.thumbHeight)
+
       this.$on('rotate', (amount) => this.thumb.getViewbox()[`rotate${amount}`]())
       this.$on('load-image', (img, thumbBackground) => {
         thumbBackground = thumbBackground || this.thumbBackground || this.imageBackground
@@ -718,3 +731,4 @@ export default {
   }
 }
 </style>
+<!-- vim: set sw=2 ts=2 :-->
