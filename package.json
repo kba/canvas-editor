@@ -8,11 +8,9 @@
     "prepublish": "webpack -p"
   },
   "peerDependencies": {
-    "semtonotes-client": "^0.1.2",
+    "semtonotes-client": "^0.2.3",
+    "semtonotes-utils": "^0.2.0",
     "vue": "^2.2.2"
-  },
-  "dependencies": {
-    "semtonotes-utils": "^0.1.6"
   },
   "devDependencies": {
     "babel-core": "^6.24.1",
