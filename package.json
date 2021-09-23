@@ -3,6 +3,7 @@
   "version": "0.0.22",
   "description": "Draw shapes on canvases with semtonotes in Vue",
   "author": "kba",
+  "license": "MIT",
   "main": "./dist/xrx-vue.js",
   "url": "https://github.com/kba/canvas-editor",
   "scripts": {
